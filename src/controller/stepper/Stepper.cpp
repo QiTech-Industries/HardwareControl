@@ -66,7 +66,7 @@ void Stepper::printStatus(bool verbous = false) {
         logPrint(INFO, INFO, ", recipeTarget: {mode: '%s', rpm: %.2f, load: %d, pos1: %zu, pos2: %zu}",
             modeTarget, _targetRecipe.rpm, _targetRecipe.load, _targetRecipe.position1, _targetRecipe.position2);
     }
-    logPrint(INFO, INFO, "}");
+    logPrint(INFO, INFO, "}\n");
 
 }
 
@@ -111,8 +111,8 @@ bool Stepper::checkNeedsHome(mode_e targetMode, mode_e currentMode) {
 
     switch(targetMode){
         case POSITIONING:
-        case OSCILLATINGLEFT:
-        case OSCILLATINGRIGHT:
+        case OSCILLATING_LEFT:
+        case OSCILLATING_RIGHT:
             return true;
         default:
             return false;
@@ -121,8 +121,8 @@ bool Stepper::checkNeedsHome(mode_e targetMode, mode_e currentMode) {
 
 bool Stepper::isRecipeFinished() {
     if (_currentRecipe.mode == POSITIONING ||
-        _currentRecipe.mode == OSCILLATINGLEFT ||
-        _currentRecipe.mode == OSCILLATINGRIGHT) {
+        _currentRecipe.mode == OSCILLATING_LEFT ||
+        _currentRecipe.mode == OSCILLATING_RIGHT) {
         return !_stepper->isRampGeneratorActive();
     }
     if (_currentRecipe.mode == HOMING && isStartSpeedReached()) {
@@ -164,14 +164,14 @@ void Stepper::startRecipe(recipe_s recipe) {
             applySpeed(recipe.rpm);
             break;
         case POSITIONING:
-        case OSCILLATINGLEFT:
+        case OSCILLATING_LEFT:
             applySpeed(recipe.rpm);
             _stepper->moveTo(mmToPosition(recipe.position1,
                 _microstepsPerRotation,
                 _config.mmPerRotation)
             );
             break;
-        case OSCILLATINGRIGHT:
+        case OSCILLATING_RIGHT:
             applySpeed(recipe.rpm);
             _stepper->moveTo(mmToPosition(recipe.position2,
                 _microstepsPerRotation,
@@ -212,7 +212,7 @@ void Stepper::adjustSpeedByLoad() {
 // Synchronous methods
 void Stepper::moveOscillate(float rpm, int32_t leftPos, int32_t rightPos, bool directionLeft) {
     _targetRecipe = _defaultRecipe;
-    _targetRecipe.mode = directionLeft ? OSCILLATINGLEFT : OSCILLATINGRIGHT;
+    _targetRecipe.mode = directionLeft ? OSCILLATING_LEFT : OSCILLATING_RIGHT;
     _targetRecipe.rpm = rpm;
     _targetRecipe.position1 = leftPos;
     _targetRecipe.position2 = rightPos;
@@ -302,11 +302,11 @@ void Stepper::handle() {
                 switchModeStandby();
             }
             break;
-        case OSCILLATINGLEFT:
-        case OSCILLATINGRIGHT:
+        case OSCILLATING_LEFT:
+        case OSCILLATING_RIGHT:
             // Invert direction when we have reached our destination
             if(!_stepper->isRampGeneratorActive()){
-                moveOscillate(_currentRecipe.rpm, _currentRecipe.position1, _currentRecipe.position2, (_currentRecipe.mode != OSCILLATINGLEFT));
+                moveOscillate(_currentRecipe.rpm, _currentRecipe.position1, _currentRecipe.position2, (_currentRecipe.mode != OSCILLATING_LEFT));
             }
             break;
         case ROTATING: // Keep on rolling, nothing to do here

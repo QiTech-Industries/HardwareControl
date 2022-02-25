@@ -24,14 +24,13 @@ struct stepper_s {
  * @brief stepper operation modes, at every time only one mode possible
  *
  */
-// TODO: Rename constans with underscore
 enum mode_e {
     ROTATING,
     ADJUSTING,
     HOMING,
     POSITIONING,
-    OSCILLATINGLEFT,
-    OSCILLATINGRIGHT,
+    OSCILLATING_LEFT,
+    OSCILLATING_RIGHT,
     STANDBY,
     OFF
 };
