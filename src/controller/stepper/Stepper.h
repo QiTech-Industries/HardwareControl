@@ -196,7 +196,6 @@ class Stepper : public BaseController{
      * change direction
      * @param leftPos left end position
      * @param rightPos right end position
-     * @param directionLeft true = start by moving left, false = start by moving right
      */
     void moveOscillate(float rpm, int32_t leftPos, int32_t rightPos, bool directionLeft=true);
 

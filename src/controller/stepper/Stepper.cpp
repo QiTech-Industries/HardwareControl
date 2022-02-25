@@ -111,8 +111,8 @@ bool Stepper::checkNeedsHome(stepperMode_e targetMode, stepperMode_e currentMode
 
     switch(targetMode){
         case POSITIONING:
-        case OSCILLATING_LEFT:
-        case OSCILLATING_RIGHT:
+        case OSCILLATING_FORWARD:
+        case OSCILLATING_BACKWARD:
             return true;
         default:
             return false;
@@ -121,8 +121,8 @@ bool Stepper::checkNeedsHome(stepperMode_e targetMode, stepperMode_e currentMode
 
 bool Stepper::isRecipeFinished() {
     if (_currentRecipe.mode == POSITIONING ||
-        _currentRecipe.mode == OSCILLATING_LEFT ||
-        _currentRecipe.mode == OSCILLATING_RIGHT) {
+        _currentRecipe.mode == OSCILLATING_FORWARD ||
+        _currentRecipe.mode == OSCILLATING_BACKWARD) {
         return !_stepper->isRampGeneratorActive();
     }
     if (_currentRecipe.mode == HOMING && isStartSpeedReached()) {
@@ -164,14 +164,14 @@ void Stepper::startRecipe(stepperRecipe_s recipe) {
             applySpeed(recipe.rpm);
             break;
         case POSITIONING:
-        case OSCILLATING_LEFT:
+        case OSCILLATING_FORWARD:
             applySpeed(recipe.rpm);
             _stepper->moveTo(mmToPosition(recipe.position1,
                 _microstepsPerRotation,
                 _config.mmPerRotation)
             );
             break;
-        case OSCILLATING_RIGHT:
+        case OSCILLATING_BACKWARD:
             applySpeed(recipe.rpm);
             _stepper->moveTo(mmToPosition(recipe.position2,
                 _microstepsPerRotation,
@@ -212,7 +212,7 @@ void Stepper::adjustSpeedByLoad() {
 // Synchronous methods
 void Stepper::moveOscillate(float rpm, int32_t leftPos, int32_t rightPos, bool directionLeft) {
     _targetRecipe = _defaultRecipe;
-    _targetRecipe.mode = directionLeft ? OSCILLATING_LEFT : OSCILLATING_RIGHT;
+    _targetRecipe.mode = directionLeft ? OSCILLATING_FORWARD : OSCILLATING_BACKWARD;
     _targetRecipe.rpm = rpm;
     _targetRecipe.position1 = leftPos;
     _targetRecipe.position2 = rightPos;
@@ -302,11 +302,11 @@ void Stepper::handle() {
                 switchModeStandby();
             }
             break;
-        case OSCILLATING_LEFT:
-        case OSCILLATING_RIGHT:
+        case OSCILLATING_FORWARD:
+        case OSCILLATING_BACKWARD:
             // Invert direction when we have reached our destination
             if(!_stepper->isRampGeneratorActive()){
-                moveOscillate(_currentRecipe.rpm, _currentRecipe.position1, _currentRecipe.position2, (_currentRecipe.mode != OSCILLATING_LEFT));
+                moveOscillate(_currentRecipe.rpm, _currentRecipe.position1, _currentRecipe.position2, (_currentRecipe.mode != OSCILLATING_FORWARD));
             }
             break;
         case ROTATING: // Keep on rolling, nothing to do here

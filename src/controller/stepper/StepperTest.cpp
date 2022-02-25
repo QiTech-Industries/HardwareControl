@@ -33,7 +33,7 @@ uint16_t indexOfClosestNumberInSortedArray(const uint16_t number,
 void modeToString(const stepperMode_e mode, char *out) {
     const char *states[8] = {
         "ROTATING",        "ADJUSTING",        "HOMING", "POSITIONING",
-        "OSCILLATINGLEFT", "OSCILLATINGRIGHT", "STANDBY",  "OFF"};
+        "OSCILLATING_FOR", "OSCILLATING_BACK", "STANDBY",  "OFF"};
     strcpy(out, states[mode]);
 }
 
