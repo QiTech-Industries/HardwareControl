@@ -324,3 +324,7 @@ void Stepper::handle() {
 bool Stepper::isReady(){
     return _initialised;
 }
+
+stepperStatus_s Stepper::getStatus(){
+    return _stepperStatus;
+}

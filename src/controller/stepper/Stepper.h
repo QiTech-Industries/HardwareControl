@@ -220,4 +220,7 @@ class Stepper : public BaseController{
      * @return false controller not ready
      */
     bool isReady();
+
+    // Getter-method
+    stepperStatus_s getStatus();
 };
