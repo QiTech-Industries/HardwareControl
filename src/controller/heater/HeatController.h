@@ -18,10 +18,9 @@ struct heaterControllerParameters_s {
  * Turns a heater on and off, trying to maintain a define the specified temperature as stable as possible, using a PID-algorithm
  * TODO: Check code for potential issues on time-overflow
  */
-class HeatController : BaseController{
+class HeatController : public BaseController{
     private:
         heaterControllerParameters_s _config; // Configuration parameters including pins
-        loggingLevel_e _logging = NONE; // Logging level, no logging by default
 
         // Tweakable configuration parameters
         const uint16_t HEATER_ACTIVATION_CYCLE_MS = 3000; // Duration for simulating pwm-activation of the heater in m for the pid-temperature-regulation
@@ -122,11 +121,4 @@ class HeatController : BaseController{
          * @param updateStates true = update internal states, false = do not update internal states
          */
         void activateHeater(bool active, bool updateStates);
-
-        /**
-         * @brief Set the current level of logging
-         * 
-         * @param level new level
-         */
-        void setDebuggingLevel(loggingLevel_e level);
 };

@@ -56,10 +56,10 @@ void HeatController::calculatePid(float currentTemperature, uint64_t currentTime
     float PID_p = 0;
     float PID_i = 0;
     float PID_d = 0;
-    float elapsedTime = (float) currentTime - (float) previousTime / 1000; // Time since last read in s
+    float elapsedTime = (float)(currentTime - previousTime) / 1000; // Time since last read in s
     float PID_error = _config.targetTemp - currentTemperature;
     
-    logPrint(_logging, INFO, "{id: %d, timeNow: %d, timePrev: %d, timeD: %d, tempNow: %.2f, tempTarget: %.2f, p: %.2f, i: %.2f, d: %.2f, , pidErr: %.2f, _pidPrevErr: %.2f, pidVal: %.2f}\n",
+    logPrint(_logging, INFO, "{id: %d, timeNow: %" PRIu64 ", timePrev: %" PRIu64 ", timeDiffSec: %.3f, tempNow: %.2f, tempTarget: %.2f, p: %.2f, i: %.2f, d: %.2f, , pidErr: %.2f, _pidPrevErr: %.2f, pidVal: %.2f}\n",
         _config.id, currentTime, previousTime, elapsedTime, currentTemperature, _config.targetTemp, \
         PID_p, PID_i, PID_d, PID_error, _pidPreviousError, _pidValue);
 
@@ -156,8 +156,4 @@ float HeatController::readSensor(){
 
     // The remaining bits are the number of 0.25 degree (C) counts
     return tempBits * 0.25;
-}
-
-void HeatController::setDebuggingLevel(loggingLevel_e level){
-    _logging = level;
 }
