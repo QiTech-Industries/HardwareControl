@@ -54,19 +54,19 @@ void Stepper::printStatus(bool verbous = false) {
     modeToString(_targetRecipe.mode, modeTarget);
 
     // Print info
-    Serial.printf("{time: %lu, summary: {id: '%s', mode: '%s', rpm: %.2f, load: %u%%, pos: %d, homed: %d, errors: '%c%c%c%c'}",
+    logPrint(INFO, INFO, "{time: %lu, summary: {id: '%s', mode: '%s', rpm: %.2f, load: %u%%, pos: %d, homed: %d, errors: '%c%c%c%c'}",
         millis(), _config.stepperId, modeCurrent, _stepperStatus.rpm, _stepperStatus.load, _stepperStatus.position, _homed,
             _stepperStatus.errorOverheating ? 'H' : '-',
             _stepperStatus.errorOpenLoad ? 'L' : '-',
             _stepperStatus.errorShutdownHeat ? 'S' : '-',
             _stepperStatus.errorShutdownShortCircuit ? 'C' : '-');
     if(verbous){
-        Serial.printf(", recipeNow: {mode: '%s', rpm: %.2f, load: %d, pos1: %zu, pos2: %zu}",
+        logPrint(INFO, INFO, ", recipeNow: {mode: '%s', rpm: %.2f, load: %d, pos1: %zu, pos2: %zu}",
             modeCurrent, _currentRecipe.rpm, _currentRecipe.load, _currentRecipe.position1, _currentRecipe.position2);
-        Serial.printf(", recipeTarget: {mode: '%s', rpm: %.2f, load: %d, pos1: %zu, pos2: %zu}",
+        logPrint(INFO, INFO, ", recipeTarget: {mode: '%s', rpm: %.2f, load: %d, pos1: %zu, pos2: %zu}",
             modeTarget, _targetRecipe.rpm, _targetRecipe.load, _targetRecipe.position1, _targetRecipe.position2);
     }
-    Serial.println("}");
+    logPrint(INFO, INFO, "}");
 
 }
 
