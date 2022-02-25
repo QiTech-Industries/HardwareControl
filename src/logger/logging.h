@@ -29,4 +29,4 @@ bool isLogRelevant(loggingLevel_e currentLevel, loggingLevel_e messageLevel);
  * @param message message to be printed
  * @param ... parameter for printf
  */
-void logPrint(loggingLevel_e currentLevel, loggingLevel_e messageLevel, char* message, ...);
+void logPrint(loggingLevel_e currentLevel, loggingLevel_e messageLevel, const char* message, ...);

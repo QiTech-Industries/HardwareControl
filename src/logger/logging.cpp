@@ -6,7 +6,7 @@ bool isLogRelevant(loggingLevel_e currentLevel, loggingLevel_e messageLevel){
     return currentLevel >= messageLevel;
 }
 
-void logPrint(loggingLevel_e currentLevel, loggingLevel_e messageLevel, char* message, ...){
+void logPrint(loggingLevel_e currentLevel, loggingLevel_e messageLevel, const char* message, ...){
     if(!isLogRelevant(currentLevel, messageLevel)) return;
 
     // Set color according to messagelevel
