@@ -1,11 +1,10 @@
-#include <Arduino.h>
-
-#include "controller/heater/HeatController.h"
-#include "logger/logging.h"
-
+// main.cpp
 /**
  * Example code for using 3 heat-controllers simultaneously
  */
+#include <Arduino.h>
+
+#include "controller/heater/HeatController.h"
 
 HeatController heater1({
     .id = 1,
@@ -34,18 +33,21 @@ HeatController heater3({
 HeatController controllerList[] = {heater1, heater2, heater3};
 int controllerCount = 3;
 
-void heater_setup(){
+void setup(){
     Serial.begin(115200);
+    // Start controllers with valid configuration
     for(int i=0; i<controllerCount; ++i){
         if(controllerList[i].isReady()) controllerList[i].start();
     }
+
+    // Make some of the controllers talk
     controllerList[0].setDebuggingLevel(WARNING);
     controllerList[controllerCount-1].setDebuggingLevel(INFO);
 }
 
-void heater_loop(){
+void loop(){
     for(int i=0; i<controllerCount; ++i){
         if(controllerList[i].isReady()) controllerList[i].handle();
     }
-    delay(1);
+    delay(1); // Small delay to prevent message-flooding
 }
