@@ -66,7 +66,7 @@ TODO
 // main.cpp
 #include <Stepper.h>
 
-stepper_s stepperConfig = {.stepperId = "stepper",
+stepperConfiguration_s stepperConfig = {.stepperId = "stepper",
                          .maxCurrent = 700,
                          .microstepsPerStep = 32,
                          .stepsPerRotation = 200,

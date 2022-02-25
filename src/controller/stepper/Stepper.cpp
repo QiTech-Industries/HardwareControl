@@ -5,7 +5,7 @@
 
 using TMC2130_n::DRV_STATUS_t;
 
-Stepper::Stepper(stepper_s& config, FastAccelStepperEngine* engine) {
+Stepper::Stepper(stepperConfiguration_s& config, FastAccelStepperEngine* engine) {
     _config = config;
     _engine = engine;
 }
@@ -105,7 +105,7 @@ void Stepper::forceStop() {
     _stepper->forceStopAndNewPosition(_stepper->getCurrentPosition());
 }
 
-bool Stepper::checkNeedsHome(mode_e targetMode, mode_e currentMode) {
+bool Stepper::checkNeedsHome(stepperMode_e targetMode, stepperMode_e currentMode) {
     if(_homed) return false;
     if(currentMode == HOMING) return false;
 
@@ -147,7 +147,7 @@ void Stepper::applySpeed(float speedRpm){
     }
 }
 
-void Stepper::startRecipe(recipe_s recipe) {
+void Stepper::startRecipe(stepperRecipe_s recipe) {
     if (recipe.mode == OFF) {
         _driver->toff(0);
         return;

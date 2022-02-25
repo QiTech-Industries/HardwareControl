@@ -12,8 +12,8 @@ using TMC2130_n::DRV_STATUS_t;
  * @brief stepper movement instructions, movements that can be scheduled
  *
  */
-struct recipe_s {
-    mode_e mode;        // Operation mode
+struct stepperRecipe_s {
+    stepperMode_e mode;        // Operation mode
     float rpm;          // Speed in rotations per minute
     uint8_t load;       // Motorload in %, 0 = no load, 100 = full load
     int32_t position1;  // Left end position
@@ -24,7 +24,7 @@ struct recipe_s {
  * @brief Status of stepper
  *
  */
-struct status_s {
+struct stepperStatus_s {
     float rpm;         // Steper Rotations per minute
     uint8_t load;      // Stepper load in %, 0 = no load, 100 = full load
     int32_t position;  // stepper position
@@ -48,19 +48,19 @@ class Stepper : public BaseController{
     const float HOMING_SPEED_RPM = 50; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
 
     // Soft configuration
-    stepper_s _config; // Stepper configuration
+    stepperConfiguration_s _config; // Stepper configuration
     uint32_t _microstepsPerRotation; // Count of step signals to be sent for one rotation
 
     // Status
     bool _initialised = false; // Flag whether controller has been initialised
     bool _homed = false; // Flag whether the driver of the stepper has been homed yet
-    status_s _stepperStatus; // Current status of stepper
+    stepperStatus_s _stepperStatus; // Current status of stepper
     
     // Recipes aka commands aka operation modes
-    const recipe_s _defaultRecipe = {
+    const stepperRecipe_s _defaultRecipe = {
         .mode = OFF, .rpm = 0, .load = 0, .position1 = 0, .position2 = 0};
-    recipe_s _currentRecipe = _defaultRecipe;  // current operation mode
-    recipe_s _targetRecipe = _defaultRecipe;   // target operation mode
+    stepperRecipe_s _currentRecipe = _defaultRecipe;  // current operation mode
+    stepperRecipe_s _targetRecipe = _defaultRecipe;   // target operation mode
     bool _newCommand = false; // Flag whether a new command is waiting in _targetRecipe
 
     /**
@@ -96,7 +96,7 @@ class Stepper : public BaseController{
      * yet
      * @return false mode does not require accuracy or already homed
      */
-    bool checkNeedsHome(mode_e targetMode, mode_e currentMode);
+    bool checkNeedsHome(stepperMode_e targetMode, stepperMode_e currentMode);
 
     /**
      * @brief Extract current stall from DRV_STATUS_t struct
@@ -123,7 +123,7 @@ class Stepper : public BaseController{
      *
      * @param recipe recipe to be executed
      */
-    void startRecipe(recipe_s recipe);
+    void startRecipe(stepperRecipe_s recipe);
 
     /**
      * @brief Stop the stepper immediatly but remember position (emergency stop)
@@ -138,7 +138,7 @@ class Stepper : public BaseController{
     void adjustSpeedByLoad();
 
    public:
-    Stepper(stepper_s& config, FastAccelStepperEngine* engine);
+    Stepper(stepperConfiguration_s& config, FastAccelStepperEngine* engine);
 
     /**
      * @brief Initialise controller according to set configuration

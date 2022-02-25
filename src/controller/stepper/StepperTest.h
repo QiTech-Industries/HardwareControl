@@ -6,7 +6,7 @@
  * @brief Stepper hardware config that can not be changed
  *
  */
-struct stepper_s {
+struct stepperConfiguration_s {
     const char *stepperId;       // stepper identifier used in logs
     uint16_t maxCurrent;         // maximum average motor current
     uint16_t microstepsPerStep;  // subdivion count of every hard step
@@ -24,7 +24,7 @@ struct stepper_s {
  * @brief stepper operation modes, at every time only one mode possible
  *
  */
-enum mode_e {
+enum stepperMode_e {
     ROTATING,
     ADJUSTING,
     HOMING,
@@ -69,12 +69,12 @@ uint16_t indexOfClosestNumberInSortedArray(const uint16_t number,
                                            const uint8_t length);
 
 /**
- * @brief convert mode_e in in char representation
+ * @brief Convert to text representation
  *
  * @param mode stepper operation mode
  * @param out memory location to write the output to
  */
-void modeToString(const mode_e mode, char *out);
+void modeToString(const stepperMode_e mode, char *out);
 
 /**
  * @brief Ensure that number lies between two boundaries

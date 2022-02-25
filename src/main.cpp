@@ -1,6 +1,6 @@
 #include "./controller/stepper/Stepper.h"
 
-stepper_s spoolConfig = {.stepperId = "spool",
+stepperConfiguration_s spoolConfig = {.stepperId = "spool",
                          .maxCurrent = 700,
                          .microstepsPerStep = 32,
                          .stepsPerRotation = 200,
@@ -12,7 +12,7 @@ stepper_s spoolConfig = {.stepperId = "spool",
                             .cs = 5,
                         }
 };
-stepper_s ferrariConfig = {.stepperId = "ferrari",
+stepperConfiguration_s ferrariConfig = {.stepperId = "ferrari",
                          .maxCurrent = 700,
                          .microstepsPerStep = 32,
                          .stepsPerRotation = 200,
@@ -24,7 +24,7 @@ stepper_s ferrariConfig = {.stepperId = "ferrari",
                         .cs = 13,
                         }
 };
-stepper_s pullerConfig = {.stepperId = "puller",
+stepperConfiguration_s pullerConfig = {.stepperId = "puller",
                          .maxCurrent = 700,
                          .microstepsPerStep = 32,
                          .stepsPerRotation = 200,
