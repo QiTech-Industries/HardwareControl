@@ -45,7 +45,7 @@ class Stepper : public BaseController{
     const uint8_t DRIVER_STALL_VALUE = 8;  // stall config needed for intialization of TMCStepper
     // TODO: make acceleration configurable
     const uint16_t DEFAULT_ACCELERATION = 1000;  // default stepper acceleration
-    const float HOMING_SPEED_RPM = 40; // Speed for homing in rotations per minute
+    const float HOMING_SPEED_RPM = 50; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
 
     // Soft configuration
     stepper_s _config; // Stepper configuration

@@ -8,6 +8,7 @@ TODO
 TODO
 ### Example (24.02.2022)
 ```cpp
+// main.cpp
 #include <Stepper.h>
 
 stepper_s stepperConfig = {.stepperId = "stepper",
@@ -17,9 +18,9 @@ stepper_s stepperConfig = {.stepperId = "stepper",
                          .mmPerRotation = 10,
                          .pins = {
                             .en = 12,
-                            .dir = 16,
-                            .step = 26,
-                            .cs = 5,
+                            .dir = 14,
+                            .step = 17,
+                            .cs = 13,
                         }
 };
 FastAccelStepperEngine engine = FastAccelStepperEngine();
@@ -30,6 +31,7 @@ void setup() {
     Serial.begin(115200);
     engine.init();
     myStepper.init();
+    myStepper.setDebuggingLevel(INFO);
 }
 
 void loop() {
