@@ -112,15 +112,19 @@ void loop() {
             // Debug-related 'programs', adjust as needed
             case '1':
                 Serial.println("[CMD]: debug procedure 1");
+                ferrari.adjustMoveSpeed(150);
                 break;
             case '2':
                 Serial.println("[CMD]: debug procedure 2");
+                ferrari.adjustMovePositions(50, 130);
                 break;
             case '3':
                 Serial.println("[CMD]: debug procedure 3");
+                ferrari.adjustMovePositions(90, 110);
                 break;
             case '4':
                 Serial.println("[CMD]: debug procedure 4");
+                ferrari.adjustMovePositions(120, 30);
                 break;
             case '5':
                 Serial.println("[CMD]: debug procedure 5");

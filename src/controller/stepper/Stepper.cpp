@@ -132,8 +132,8 @@ bool Stepper::isRecipeFinished() {
 }
 
 void Stepper::applySpeed(float speedRpm){
-    _driver->toff(1);
     forceStop();
+    _driver->toff(1);
     if(speedRpm != 0) {
         _stepper->setSpeedInUs(
         speedRpmToUs(speedRpm, _microstepsPerRotation));
@@ -149,6 +149,7 @@ void Stepper::applySpeed(float speedRpm){
 
 void Stepper::startRecipe(stepperRecipe_s recipe) {
     if (recipe.mode == OFF) {
+        applySpeed(0);
         _driver->toff(0);
         return;
     }
@@ -180,7 +181,7 @@ void Stepper::startRecipe(stepperRecipe_s recipe) {
             break;
         case OFF:
             applySpeed(0); // Stop any movement
-            _driver->toff(0); // power off the driver
+            _driver->toff(0); // Power off the driver
             break;
         case STANDBY:
             applySpeed(0); // Stop any movement
@@ -210,12 +211,12 @@ void Stepper::adjustSpeedByLoad() {
 }
 
 // Synchronous methods
-void Stepper::moveOscillate(float rpm, int32_t leftPos, int32_t rightPos, bool directionLeft) {
+void Stepper::moveOscillate(float rpm, int32_t startPos, int32_t endPos, bool directionForward) {
     _targetRecipe = _defaultRecipe;
-    _targetRecipe.mode = directionLeft ? OSCILLATING_FORWARD : OSCILLATING_BACKWARD;
+    _targetRecipe.mode = directionForward ? OSCILLATING_FORWARD : OSCILLATING_BACKWARD;
     _targetRecipe.rpm = rpm;
-    _targetRecipe.position1 = leftPos;
-    _targetRecipe.position2 = rightPos;
+    _targetRecipe.position1 = startPos;
+    _targetRecipe.position2 = endPos;
     _newCommand = true;
 }
 
@@ -327,4 +328,58 @@ bool Stepper::isReady(){
 
 stepperStatus_s Stepper::getStatus(){
     return _stepperStatus;
+}
+
+stepperMode_e Stepper::getCurrentMode(){
+    return _currentRecipe.mode;
+}
+
+void Stepper::adjustMovePositions(int32_t startPos, int32_t endPos){
+    _currentRecipe.position1 = startPos;
+    _currentRecipe.position2 = endPos;
+    
+    switch(_currentRecipe.mode){
+        case ROTATING:
+        case ADJUSTING:
+        case HOMING:
+        case OFF:
+        case STANDBY:
+            break;
+        case POSITIONING:
+        case OSCILLATING_FORWARD:
+            applySpeed(_currentRecipe.rpm);
+            _stepper->moveTo(mmToPosition(_currentRecipe.position1,
+                _microstepsPerRotation,
+                _config.mmPerRotation)
+            );
+            break;
+        case OSCILLATING_BACKWARD:
+            _stepper->moveTo(mmToPosition(_currentRecipe.position2,
+                _microstepsPerRotation,
+                _config.mmPerRotation)
+            );
+            break;
+    }
+}
+
+void Stepper::adjustMoveSpeed(float rpm){
+    _currentRecipe.rpm = rpm;
+
+    switch(_currentRecipe.mode){
+        case ROTATING:
+        case ADJUSTING:
+        case HOMING:
+            applySpeed(_currentRecipe.rpm);
+            break;
+        case POSITIONING:
+        case OSCILLATING_FORWARD:
+            applySpeed(_currentRecipe.rpm);
+            break;
+        case OSCILLATING_BACKWARD:
+            applySpeed(_currentRecipe.rpm);
+            break;
+        case OFF:
+        case STANDBY:
+            break;
+    }
 }

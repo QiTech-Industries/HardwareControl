@@ -16,8 +16,8 @@ struct stepperRecipe_s {
     stepperMode_e mode;        // Operation mode
     float rpm;          // Speed in rotations per minute
     uint8_t load;       // Motorload in %, 0 = no load, 100 = full load
-    int32_t position1;  // Left end position
-    int32_t position2;  // Right end position
+    int32_t position1;  // Start position
+    int32_t position2;  // End position
 };
 
 /**
@@ -45,7 +45,7 @@ class Stepper : public BaseController{
     const uint8_t DRIVER_STALL_VALUE = 8;  // stall config needed for intialization of TMCStepper
     // TODO: make acceleration configurable
     const uint16_t DEFAULT_ACCELERATION = 1000;  // default stepper acceleration
-    const float HOMING_SPEED_RPM = 50; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
+    const float HOMING_SPEED_RPM = 60; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
 
     // Soft configuration
     stepperConfiguration_s _config; // Stepper configuration
@@ -194,10 +194,11 @@ class Stepper : public BaseController{
      *
      * @param rpm target stepper speed in rotationsPerMinute negative values
      * change direction
-     * @param leftPos left end position
-     * @param rightPos right end position
+     * @param startPos start position
+     * @param endPos end position
+     * @param directionForward true=Start by moving from start to end, false=Start by moving from end to start
      */
-    void moveOscillate(float rpm, int32_t leftPos, int32_t rightPos, bool directionLeft=true);
+    void moveOscillate(float rpm, int32_t startPos, int32_t endPos, bool directionForward=true);
 
     /**
      * @brief Manages states and transitions, repeatedly called
@@ -223,4 +224,22 @@ class Stepper : public BaseController{
 
     // Getter-method
     stepperStatus_s getStatus();
+
+    // Getter-method
+    stepperMode_e getCurrentMode();
+
+    /**
+     * @brief Change start- and end-positions of current move-command without interrupting it
+     * 
+     * @param startPos start position
+     * @param endPos end position
+     */
+    void adjustMovePositions(int32_t startPos, int32_t endPos);
+
+    /**
+     * @brief Change speed of current move-command without interrupting it
+     * 
+     * @param rpm movement speed in rotations per minute
+     */
+	void adjustMoveSpeed(float rpm);
 };
