@@ -131,9 +131,11 @@ bool Stepper::isRecipeFinished() {
     return false;
 }
 
-void Stepper::applySpeed(float speedRpm){
-    forceStop();
-    _driver->toff(1);
+void Stepper::applySpeed(float speedRpm, boolean forceMoveStop){
+    if(forceMoveStop){
+        forceStop();
+        _driver->toff(1);
+    }
     if(speedRpm != 0) {
         _stepper->setSpeedInUs(
         speedRpmToUs(speedRpm, _microstepsPerRotation));
@@ -369,14 +371,14 @@ void Stepper::adjustMoveSpeed(float rpm){
         case ROTATING:
         case ADJUSTING:
         case HOMING:
-            applySpeed(_currentRecipe.rpm);
+            applySpeed(_currentRecipe.rpm, false);
             break;
         case POSITIONING:
         case OSCILLATING_FORWARD:
-            applySpeed(_currentRecipe.rpm);
+            applySpeed(_currentRecipe.rpm, false);
             break;
         case OSCILLATING_BACKWARD:
-            applySpeed(_currentRecipe.rpm);
+            applySpeed(_currentRecipe.rpm, false);
             break;
         case OFF:
         case STANDBY:

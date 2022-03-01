@@ -91,11 +91,15 @@ void loop() {
                 break;
             case 'x': // mode off
                 Serial.println("[CMD]: switchModeOff()");
+                spool.switchModeOff();
                 ferrari.switchModeOff();
+                puller.switchModeOff();
                 break;
             case 's': // mode standby
                 Serial.println("[CMD]: switchModeStandby()");
+                spool.switchModeStandby();
                 ferrari.switchModeStandby();
+                puller.switchModeStandby();
                 break;
             case 'l': // print out long debugging message
                 Serial.println("[CMD]: enable debugging, printStatusLong()");
@@ -128,9 +132,11 @@ void loop() {
                 break;
             case '5':
                 Serial.println("[CMD]: debug procedure 5");
+                puller.adjustMoveSpeed(70);
                 break;
             case '6':
                 Serial.println("[CMD]: debug procedure 6");
+                puller.adjustMoveSpeed(150);
                 break;
             default:
                 Serial.println("[CMD] Unknown command - input ignored");

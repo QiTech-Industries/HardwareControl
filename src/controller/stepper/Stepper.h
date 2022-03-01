@@ -115,8 +115,9 @@ class Stepper : public BaseController{
      * @brief Make the motor run at a defined speed
      * 
      * @param speedRpm speed in rotations per minute. If 0 the motor will be powered but not moving. Positive / negative values determine the direction
+     * @param forceMoveStop true=forefully stop current movement before applying new speed, false=fluent transition into new speed
      */
-    void applySpeed(float speedRpm);
+    void applySpeed(float speedRpm, boolean forceMoveStop=true);
 
     /**
      * @brief Start executing a recipe
