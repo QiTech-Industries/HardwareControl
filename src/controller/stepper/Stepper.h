@@ -47,11 +47,12 @@ class Stepper : public BaseController{
     // Hardcoded configuration
     const uint8_t DRIVER_STALL_VALUE = 8;  // stall config needed for intialization of TMCStepper
     // TODO: make acceleration configurable
-    const uint16_t DEFAULT_ACCELERATION = 1000;  // default stepper acceleration
+    const uint16_t DEFAULT_ACCELERATION = 10000;  // Default stepper acceleration
     const float HOMING_SPEED_RPM = 60; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
     const uint8_t HOMING_BUMPS_NEEDED = 2; // Number of consecutive bumps (100% load) needed to be sure that we have found the home position and not just measured a glitched load value
 
     // Soft configuration
+    uint16_t _acceleration = DEFAULT_ACCELERATION; // Motor acceleration
     stepperConfiguration_s _config; // Stepper configuration
     uint32_t _microstepsPerRotation; // Count of step signals to be sent for one rotation
 
@@ -248,4 +249,14 @@ class Stepper : public BaseController{
      * @param rpm movement speed in rotations per minute
      */
 	void adjustMoveSpeed(float rpm);
+
+    /**
+     * @brief Set and apply new motor acceleration
+     * 
+     * @param newAcceleration new value to be used
+     */
+    void adjustAcceleration(uint16_t newAcceleration);
+
+    // Getter-method
+    uint16_t getAcceleration();
 };

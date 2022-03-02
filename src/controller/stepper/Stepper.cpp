@@ -43,7 +43,7 @@ void Stepper::init() {
     _stepper = _engine->stepperConnectToPin(_config.pins.step);
     _stepper->setDirectionPin(_config.pins.dir);
     _stepper->setEnablePin(_config.pins.en);
-    _stepper->setAcceleration(DEFAULT_ACCELERATION);
+    _stepper->setAcceleration(_acceleration);
 
     _initialised = true;
 }
@@ -394,4 +394,13 @@ void Stepper::adjustMoveSpeed(float rpm){
         case STANDBY:
             break;
     }
+}
+
+void Stepper::adjustAcceleration(uint16_t newAcceleration){
+    _acceleration = newAcceleration;
+    _stepper->setAcceleration(_acceleration);
+}
+
+uint16_t Stepper::getAcceleration(){
+    return _acceleration;
 }
