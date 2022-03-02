@@ -157,6 +157,7 @@ void Stepper::startRecipe(stepperRecipe_s recipe) {
     if (recipe.mode == OFF) {
         applySpeed(0);
         _driver->toff(0);
+        _homed = false;
         return;
     }
 
