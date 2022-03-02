@@ -59,10 +59,9 @@ void setup() {
     ferrari.init();
 
     // Set starting commands
-    puller.moveRotate(-20);
-    spool.moveRotate(50);
+    puller.moveRotate(-30);
+    spool.moveRotate(20);
     ferrari.movePosition(80, 100);
-    
 }
 
 void loop() {

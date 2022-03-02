@@ -290,10 +290,15 @@ void Stepper::handle() {
         case HOMING:
             // Wait for stopper to be hit to set home
             if (isStartSpeedReached() && _stepperStatus.load == 100) {
-                _stepper->forceStopAndNewPosition(0);
-                _homed = true;
-                _currentRecipe.mode = STANDBY;
-                _newCommand = true; // Return to whatever we were doing on the next cycle
+                _homeConsecutiveBumpCounter++;
+                if(_homeConsecutiveBumpCounter > HOMING_BUMPS_NEEDED){
+                    _stepper->forceStopAndNewPosition(0);
+                    _homed = true;
+                    _currentRecipe.mode = STANDBY;
+                    _newCommand = true; // Return to whatever we were doing on the next cycle
+                }
+            } else {
+                _homeConsecutiveBumpCounter = 0;
             }
             break;
         case ADJUSTING:

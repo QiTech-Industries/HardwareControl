@@ -46,6 +46,7 @@ class Stepper : public BaseController{
     // TODO: make acceleration configurable
     const uint16_t DEFAULT_ACCELERATION = 1000;  // default stepper acceleration
     const float HOMING_SPEED_RPM = 60; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
+    const uint8_t HOMING_BUMPS_NEEDED = 2; // Number of consecutive bumps (100% load) needed to be sure that we have found the home position and not just measured a glitched load value
 
     // Soft configuration
     stepperConfiguration_s _config; // Stepper configuration
@@ -53,6 +54,7 @@ class Stepper : public BaseController{
 
     // Status
     bool _initialised = false; // Flag whether controller has been initialised
+    uint8_t _homeConsecutiveBumpCounter=0; // Number of consecutive bumps (100% load) while at homing-speed. Needed to detect proper home-position opposed to glitched load values.
     bool _homed = false; // Flag whether the driver of the stepper has been homed yet
     stepperStatus_s _stepperStatus; // Current status of stepper
     
