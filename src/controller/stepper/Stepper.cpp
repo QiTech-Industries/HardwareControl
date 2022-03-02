@@ -1,7 +1,11 @@
+// Related
 #include "Stepper.h"
-
+// System / External
 #include <FastAccelStepper.h>
 #include <TMCStepper.h>
+// Selfmade
+// Project
+
 
 using TMC2130_n::DRV_STATUS_t;
 

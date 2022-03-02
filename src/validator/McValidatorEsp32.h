@@ -1,5 +1,10 @@
 #pragma once
+
+// Related
 #include "McValidator.h"
+// System / External
+// Selfmade
+// Project
 
 /**
  * @brief Validator-Implementation for the ESP-32 (TODO: Check full mc-id)

@@ -1,5 +1,10 @@
 #pragma once
 
+// Related
+// System / External
+// Selfmade
+// Project
+
 /**
  * @brief Priority levels for logging
  */

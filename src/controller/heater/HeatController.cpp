@@ -1,16 +1,17 @@
+// Related
 #include "HeatController.h"
-
+// System / External
 #include <Arduino.h>
-
+// Selfmade
+// Project
 #include "../../logger/logging.h"
-
 #include "../../validator/McValidator.h"
 
 /**
  * @brief Calculates the difference of two millis()-timestamps
  * 
  * @param timestampStart Timestamp of first measurement
- * @param timestampEnd  Timestamp of second measurement
+ * @param timestampEnd Timestamp of second measurement
  * @return uint64_t Timedifference between measurements in milliseconds
  */
 uint64_t timeDifference(uint64_t timestampStart, uint64_t timestampEnd){

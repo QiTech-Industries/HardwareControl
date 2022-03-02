@@ -1,6 +1,10 @@
 #pragma once
 
+// Related
+// System / External
 #include <stdint.h>
+// Selfmade
+// Project
 
 /**
  * @brief Stepper hardware config that can not be changed

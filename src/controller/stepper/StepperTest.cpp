@@ -1,10 +1,12 @@
+// Related
 #include "StepperTest.h"
-
+// System / External
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
+// Selfmade
+// Project
 
-// Implements binary search
 uint16_t indexOfClosestNumberInSortedArray(const uint16_t number,
                                            const uint16_t *arr,
                                            const uint8_t length) {

@@ -1,5 +1,10 @@
 #pragma once
+
+// Related
+// System / External
 #include <stdint.h>
+// Selfmade
+// Project
 
 /**
  * @brief Validator for a microcontroller, for example for checking whether a pin exists and is of a specified type

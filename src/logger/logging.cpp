@@ -1,6 +1,9 @@
+// Related
 #include "logging.h"
-
+// System / External
 #include <Arduino.h>
+// Selfmade
+// Project
 
 bool isLogRelevant(loggingLevel_e currentLevel, loggingLevel_e messageLevel){
     return currentLevel >= messageLevel;

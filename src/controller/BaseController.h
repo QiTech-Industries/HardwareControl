@@ -1,6 +1,10 @@
 #pragma once
-#include <stdint.h>
 
+// Related
+// System / External
+#include <stdint.h>
+// Selfmade
+// Project
 #include "../logger/logging.h"
 #include "../validator/McValidator.h"
 #include "../validator/McValidatorEsp32.h"

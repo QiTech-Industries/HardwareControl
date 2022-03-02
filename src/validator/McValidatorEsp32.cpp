@@ -1,6 +1,9 @@
+// Related
 #include "McValidatorEsp32.h"
-
+// System / External
 #include <stdint.h>
+// Selfmade
+// Project
 
 bool McValidatorEsp32::isDigitalPinValid(uint8_t pin){
     switch(pin){
