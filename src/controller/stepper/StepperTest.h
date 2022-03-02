@@ -12,6 +12,7 @@ struct stepperConfiguration_s {
     uint16_t microstepsPerStep;  // subdivion count of every hard step
     float stepsPerRotation;      // hard steps per rotation (NEMA17 - 200)
     float mmPerRotation;  // mm stepper moves, mm filament pulled every rotation
+    float gearRatio; // gear-dependend ratio for motor-rotations to the rotations of the moved object (like a spool). 1 = 1:1 = direct 
     struct Pins {
         uint8_t en;    // SPI enable pin
         uint8_t dir;   // stepper direcion pin

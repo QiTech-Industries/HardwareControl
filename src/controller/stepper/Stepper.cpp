@@ -18,7 +18,7 @@ void Stepper::init() {
         || !_mcValidator.isDigitalPinValid(_config.pins.step)
     ) return;
     
-    _microstepsPerRotation = _config.stepsPerRotation * _config.microstepsPerStep;
+    _microstepsPerRotation = _config.stepsPerRotation * _config.microstepsPerStep * _config.gearRatio;
     _driver = new TMC2130Stepper(_config.pins.cs);
     _driver->begin();
 

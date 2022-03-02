@@ -6,6 +6,7 @@ stepperConfiguration_s stepperConfig = {.stepperId = "stepper",
                          .microstepsPerStep = 32,
                          .stepsPerRotation = 200,
                          .mmPerRotation = 10,
+                        .gearRatio = 1,
                          .pins = {
                             .en = 12,
                             .dir = 14,

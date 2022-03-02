@@ -61,16 +61,17 @@ void loop(){
 ```
 ## StepperController
 TODO
-### Example (25.02.2022)
+### Example (02.03.2022)
 ```cpp
 // main.cpp
-#include <Stepper.h>
+#include "./controller/stepper/Stepper.h"
 
 stepperConfiguration_s stepperConfig = {.stepperId = "stepper",
                          .maxCurrent = 700,
                          .microstepsPerStep = 32,
                          .stepsPerRotation = 200,
                          .mmPerRotation = 10,
+                        .gearRatio = 1,
                          .pins = {
                             .en = 12,
                             .dir = 14,

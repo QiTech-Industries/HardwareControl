@@ -1,40 +1,46 @@
 #include "./controller/stepper/Stepper.h"
 
-stepperConfiguration_s spoolConfig = {.stepperId = "spool",
-                         .maxCurrent = 700,
-                         .microstepsPerStep = 32,
-                         .stepsPerRotation = 200,
-                         .mmPerRotation = 10,
-                         .pins = {
-                            .en = 12,
-                            .dir = 16,
-                            .step = 26,
-                            .cs = 5,
-                        }
+stepperConfiguration_s spoolConfig = {
+    .stepperId = "spool",
+    .maxCurrent = 700,
+    .microstepsPerStep = 32,
+    .stepsPerRotation = 200,
+    .mmPerRotation = 10,
+    .gearRatio = 5.18,
+    .pins = {
+        .en = 12,
+        .dir = 16,
+        .step = 26,
+        .cs = 5,
+    }
 };
-stepperConfiguration_s ferrariConfig = {.stepperId = "ferrari",
-                         .maxCurrent = 700,
-                         .microstepsPerStep = 32,
-                         .stepsPerRotation = 200,
-                         .mmPerRotation = 10,
-                        .pins = { // Pins of ferrari
-                        .en = 12,
-                        .dir = 14,
-                        .step = 17,
-                        .cs = 13,
-                        }
+stepperConfiguration_s ferrariConfig = {
+    .stepperId = "ferrari",
+    .maxCurrent = 700,
+    .microstepsPerStep = 32,
+    .stepsPerRotation = 200,
+    .mmPerRotation = 10,
+    .gearRatio = 1,
+    .pins = {
+        .en = 12,
+        .dir = 14,
+        .step = 17,
+        .cs = 13,
+    }
 };
-stepperConfiguration_s pullerConfig = {.stepperId = "puller",
-                         .maxCurrent = 700,
-                         .microstepsPerStep = 32,
-                         .stepsPerRotation = 200,
-                         .mmPerRotation = 10,
-                         .pins = { // Pins of puller
-                        .en = 12,
-                        .dir = 27,
-                        .step = 25,
-                        .cs = 2,
-                         }
+stepperConfiguration_s pullerConfig = {
+    .stepperId = "puller",
+    .maxCurrent = 700,
+    .microstepsPerStep = 32,
+    .stepsPerRotation = 200,
+    .mmPerRotation = 10,
+    .gearRatio = 1,
+    .pins = {
+        .en = 12,
+        .dir = 27,
+        .step = 25,
+        .cs = 2,
+    }
 };
 
 FastAccelStepperEngine engine = FastAccelStepperEngine();
