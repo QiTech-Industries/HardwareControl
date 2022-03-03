@@ -236,6 +236,7 @@ void Stepper::adjustSpeedByLoad() {
     if(getCurrentStall()<350) speedNewUs = speedNewSlowerUs; // TODO: Check for stall flag
     if(getCurrentStall()>400) speedNewUs = speedNewFasterUs;
 
+    /*
     logPrint(WARNING, WARNING,
         "\n{sNwUs: %d, sNwR: %.2f, stlNw: %d, do: '%c', sChangeU: %d}",
         currentSpeedUs,
@@ -246,6 +247,7 @@ void Stepper::adjustSpeedByLoad() {
         ((speedNewUs == speedNewFasterUs) ? '+' : ((speedNewUs == speedNewSlowerUs) ? '-' : '=')), // Speed up needed based on load values?
         speedNewUs
     ); // TODO - debug
+    */
 
     // Apply speed change
     if(currentSpeedUs != speedNewUs) {
