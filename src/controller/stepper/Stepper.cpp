@@ -420,14 +420,21 @@ void Stepper::adjustMoveSpeed(float rpm){
         case ROTATING:
         case ADJUSTING:
         case HOMING:
+            _stepper->setSpeedInUs(
+            speedRpmToUs(_currentRecipe.rpm, _microstepsPerRotation));
+            _stepper->applySpeedAcceleration();
             applySpeed(_currentRecipe.rpm, false);
             break;
         case POSITIONING:
         case OSCILLATING_FORWARD:
-            applySpeed(_currentRecipe.rpm, false);
+            _stepper->setSpeedInUs(
+            speedRpmToUs(_currentRecipe.rpm, _microstepsPerRotation));
+            _stepper->applySpeedAcceleration();
             break;
         case OSCILLATING_BACKWARD:
-            applySpeed(_currentRecipe.rpm, false);
+            _stepper->setSpeedInUs(
+            speedRpmToUs(_currentRecipe.rpm, _microstepsPerRotation));
+            _stepper->applySpeedAcceleration();
             break;
         case OFF:
         case STANDBY:

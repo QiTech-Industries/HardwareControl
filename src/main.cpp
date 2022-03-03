@@ -103,6 +103,21 @@ void loop() {
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
 
+            case 'q':
+                ferrari.movePosition(70, 50);
+                break;
+            case 'b':
+                ferrari.movePosition(70, 100);
+                break;
+            case 'c':
+                ferrari.moveOscillate(70, 50, 100);
+                break;
+            case 'v':
+                ferrari.adjustMoveSpeed(30);
+                break;
+            case 'V':
+                ferrari.adjustMoveSpeed(-30);
+                break;
 
 
             case 'u': // Unwind
