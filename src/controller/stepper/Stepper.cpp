@@ -82,8 +82,7 @@ uint16_t Stepper::getCurrentStall() {
 
 void Stepper::updateStatus() {
     DRV_STATUS_t drv_status{0};
-    if (_driver->drv_err())
-    {
+    if (_driver->drv_err()) {
         _stepperStatus.errorOverheating = drv_status.otpw;
         _stepperStatus.errorOpenLoad = (drv_status.ola or drv_status.olb);
         _stepperStatus.errorShutdownHeat = (drv_status.ot);
@@ -201,19 +200,57 @@ bool Stepper::isStartSpeedReached(){
 }
 
 void Stepper::adjustSpeedByLoad() {
-    if (!isStartSpeedReached()) return; // Invalid load-measurements for low speeds
+    /*
+    // TODO
+    // Calculate the necessary speed-adjustment using a pid-algorithm
+    float _pidPreviousError;
+    unsigned long previousTime;
 
-    if (_stepperStatus.load < _currentRecipe.load) {
-        // load too low speed up
-        _stepper->setSpeedInUs(_stepper->getSpeedInUs() * 0.9);
-        _stepper->applySpeedAcceleration();
-        return;
+    const float PID_CONST_ERROR_RANGE = 3;
+    const float PID_CONST_P = 9.1; // Adjustable parameter of the PID-algorithm
+    const float PID_CONST_I = 0.3; // Adjustable parameter of the PID-algorithm
+    const float PID_CONST_D = 1.8; // Adjustable parameter of the PID-algorithm
+    float pidValueP = 0;
+    float pidValueI = 0;
+    float pidValueD = 0;
+    float elapsedTime = (float)(millis() - previousTime) / 1000; // Time since last read in s
+    float PID_error = _currentRecipe.load - _stepperStatus.load;
+
+    pidValueP = PID_CONST_P * PID_error;
+    if(-PID_CONST_ERROR_RANGE < PID_error || PID_error < PID_CONST_ERROR_RANGE){
+        pidValueI = pidValueI + (PID_CONST_I * PID_error);
     }
-    if (_stepperStatus.load > _currentRecipe.load) {
-        // load too high slow down
-        _stepper->setSpeedInUs(_stepper->getSpeedInUs() * 1.5);
+    pidValueD = PID_CONST_D * ((PID_error - _pidPreviousError) / elapsedTime);
+    float _pidValue = pidValueP + pidValueI + pidValueD;
+    */
+
+    // TODO: Actually use recipe-values (load-level, rpm)
+
+    float gearRatio = (_config.gearRatio == 0) ? 1 : _config.gearRatio;
+    uint32_t currentSpeedUs = _stepper->getCurrentSpeedInUs(); // Current speed in Us ticks
+    uint32_t speedLimitLowUs = speedRpmToUs(50 / gearRatio, _microstepsPerRotation); // Slowest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
+    uint32_t speedLimitHighUs = speedRpmToUs(200 / gearRatio, _microstepsPerRotation); // Fastest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
+    uint32_t speedNewFasterUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * 0.9)); // New speed in Us ticks when speeding up (smaller = faster)
+    uint32_t speedNewSlowerUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * 1.1)); // New speed in Us ticks when slowing down (bigger = slower)
+    uint32_t speedNewUs = currentSpeedUs;
+    if(getCurrentStall()<350) speedNewUs = speedNewSlowerUs; // TODO: Check for stall flag
+    if(getCurrentStall()>400) speedNewUs = speedNewFasterUs;
+
+    logPrint(WARNING, WARNING,
+        "\n{sNwUs: %d, sNwR: %.2f, stlNw: %d, do: '%c', sChangeU: %d}",
+        currentSpeedUs,
+        speedUsToRpm(_stepper->getCurrentSpeedInUs(), _microstepsPerRotation),
+        getCurrentStall(), // Raw stall value
+        //_stepperStatus.load, // Current load value
+        //_currentRecipe.load, // Target load value set by recipe
+        ((speedNewUs == speedNewFasterUs) ? '+' : ((speedNewUs == speedNewSlowerUs) ? '-' : '=')), // Speed up needed based on load values?
+        speedNewUs
+    ); // TODO - debug
+
+    // Apply speed change
+    if(currentSpeedUs != speedNewUs) {
+        _stepper->setSpeedInUs(speedNewUs);
         _stepper->applySpeedAcceleration();
-        return;
     }
 }
 

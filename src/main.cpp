@@ -5,7 +5,7 @@ stepperConfiguration_s spoolConfig = {
     .maxCurrent = 700,
     .microstepsPerStep = 32,
     .stepsPerRotation = 200,
-    .mmPerRotation = 10,
+    .mmPerRotation = 2800,
     .gearRatio = 5.18,
     .pins = {
         .en = 12,
@@ -59,9 +59,7 @@ void setup() {
     ferrari.init();
 
     // Set starting commands
-    puller.moveRotate(-30);
-    spool.moveRotate(20);
-    ferrari.movePosition(80, 100);
+    // ferrari.movePosition(80, 80);
 }
 
 void loop() {
@@ -72,19 +70,45 @@ void loop() {
             // Basic commands
             case 'h': // Home
                 Serial.println("[CMD]: home()");
-                ferrari.moveHome(30);
-                break;
-            case 'o': // Oscillate
-                Serial.println("[CMD]: moveOscillate()");
-                ferrari.moveOscillate(40, 50, 90);
+                ferrari.moveHome(60);
                 break;
             case 'p': // Position
                 Serial.println("[CMD]: movePosition()");
-                ferrari.movePosition(40, 80);
+                ferrari.movePosition(80, 80);
                 break;
-            case 'r': // Rotate
+
+
+            case '1': // Oscillate
+                Serial.println("[CMD]: 111111111111111111111()");
+                puller.moveRotate(-30);
+                spool.moveRotateWithLoadAdjust(-5, 50);
+                // ferrari.moveOscillate(30, 80, 130);
+                break;
+            case '2': // Oscillate
+                Serial.println("[CMD]: 222222222222222222222222()");
+                puller.moveRotate(-30);
+                spool.moveRotateWithLoadAdjust(-10, 50);
+                // ferrari.moveOscillate(30, 80, 130);
+                break;
+            case '3': // Oscillate
+                Serial.println("[CMD]: 333333333333333333333333333333333()");
+                puller.moveRotate(-30);
+                spool.moveRotateWithLoadAdjust(-20, 50);
+                // ferrari.moveOscillate(30, 80, 130);
+                break;
+            case '4': // Oscillate
+                Serial.println("[CMD]: 44444444444444444444444444444444()");
+                puller.moveRotate(-30);
+                spool.moveRotateWithLoadAdjust(-30, 50);
+                // ferrari.moveOscillate(30, 80, 130);
+                break;
+
+
+
+            case 'u': // Unwind
                 Serial.println("[CMD]: moveRotate()");
-                ferrari.moveRotate(40);
+                spool.switchModeOff();
+                puller.moveRotate(60);
                 break;
             case 'R': // Rotate
                 Serial.println("[CMD]: moveRotate()");
@@ -95,16 +119,16 @@ void loop() {
                 ferrari.moveRotateWithLoadAdjust(40, 60);
                 break;
             case 'x': // mode off
-                Serial.println("[CMD]: switchModeOff()");
-                spool.switchModeOff();
-                ferrari.switchModeOff();
-                puller.switchModeOff();
-                break;
-            case 's': // mode standby
                 Serial.println("[CMD]: switchModeStandby()");
                 spool.switchModeStandby();
                 ferrari.switchModeStandby();
                 puller.switchModeStandby();
+                break;
+            case 'X': // mode standby
+                Serial.println("[CMD]: switchModeOff()");
+                spool.switchModeOff();
+                ferrari.switchModeOff();
+                puller.switchModeOff();
                 break;
             case 'l': // print out long debugging message
                 Serial.println("[CMD]: enable debugging, printStatusLong()");
@@ -112,37 +136,13 @@ void loop() {
                 break;
             case 'd': // enable debugging
                 Serial.println("[CMD]: enable debugging");
-                ferrari.setDebuggingLevel(INFO);
+                //ferrari.setDebuggingLevel(INFO);
                 break;
             case 'D': // disable  debugging
                 Serial.println("[CMD]: disable debugging");
-                ferrari.setDebuggingLevel(NONE);
+                //ferrari.setDebuggingLevel(NONE);
                 break;
             // Debug-related 'programs', adjust as needed
-            case '1':
-                Serial.println("[CMD]: debug procedure 1");
-                ferrari.adjustMoveSpeed(150);
-                break;
-            case '2':
-                Serial.println("[CMD]: debug procedure 2");
-                ferrari.adjustMovePositions(50, 130);
-                break;
-            case '3':
-                Serial.println("[CMD]: debug procedure 3");
-                ferrari.adjustMovePositions(90, 110);
-                break;
-            case '4':
-                Serial.println("[CMD]: debug procedure 4");
-                ferrari.adjustMovePositions(120, 30);
-                break;
-            case '5':
-                Serial.println("[CMD]: debug procedure 5");
-                puller.adjustMoveSpeed(70);
-                break;
-            case '6':
-                Serial.println("[CMD]: debug procedure 6");
-                puller.adjustMoveSpeed(150);
-                break;
             default:
                 Serial.println("[CMD] Unknown command - input ignored");
         };
@@ -157,10 +157,10 @@ void loop() {
             delay(10); // TODO: Delay only to prevent a debug-message-flood
         }
         //spool.printStatus(false);
-        ferrari.printStatus(false);
+        //ferrari.printStatus(false);
         //puller.printStatus(false);
     }
     //spool.printStatus(true);
-    ferrari.printStatus(true);
+    //ferrari.printStatus(true);
     //puller.printStatus(true);
 }

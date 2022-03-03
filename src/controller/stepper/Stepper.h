@@ -104,7 +104,7 @@ class Stepper : public BaseController{
     bool checkNeedsHome(stepperMode_e targetMode, stepperMode_e currentMode);
 
     /**
-     * @brief Extract current stall from DRV_STATUS_t struct
+     * @brief Get the current raw stall value from the driver
      *
      * @return uint16_t raw load 0...1023
      */
