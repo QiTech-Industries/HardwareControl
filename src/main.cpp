@@ -51,6 +51,7 @@ Stepper puller = Stepper(pullerConfig, &engine);
 void setup() {
     SPI.begin();
     Serial.begin(115200);
+    Serial.println("\n-----------------");
 
     // Initalisation
     engine.init();
@@ -80,27 +81,57 @@ void loop() {
 
             case '1': // Oscillate
                 Serial.println("[CMD]: 111111111111111111111()");
-                puller.moveRotate(-30);
-                spool.moveRotateWithLoadAdjust(-5, 50);
+                puller.moveRotate(-2.5);
+                spool.moveRotateWithLoadAdjust(5, 50);
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
             case '2': // Oscillate
                 Serial.println("[CMD]: 222222222222222222222222()");
-                puller.moveRotate(-30);
-                spool.moveRotateWithLoadAdjust(-10, 50);
+                puller.moveRotate(-5);
+                spool.moveRotateWithLoadAdjust(5, 50);
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
             case '3': // Oscillate
                 Serial.println("[CMD]: 333333333333333333333333333333333()");
-                puller.moveRotate(-30);
-                spool.moveRotateWithLoadAdjust(-20, 50);
+                puller.moveRotate(-7.5);
+                spool.moveRotateWithLoadAdjust(5, 50);
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
             case '4': // Oscillate
                 Serial.println("[CMD]: 44444444444444444444444444444444()");
-                puller.moveRotate(-30);
-                spool.moveRotateWithLoadAdjust(-30, 50);
+                puller.moveRotate(-10);
+                spool.moveRotateWithLoadAdjust(54, 50);
                 // ferrari.moveOscillate(30, 80, 130);
+                break;
+            case '5':
+                Serial.println("[CMD]: 555555555555555555()");
+                puller.moveRotate(-60);
+                spool.moveRotateWithLoadAdjust(54, 50);
+                break;
+            case '6':
+                Serial.println("[CMD]: 666666666666()");
+                puller.moveRotate(-80);
+                spool.moveRotateWithLoadAdjust(54, 50);
+                break;
+            case '7':
+                Serial.println("[CMD]: 777777777777777()");
+                puller.moveRotate(-100);
+                spool.moveRotateWithLoadAdjust(54, 50);
+                break;
+            case '8':
+                Serial.println("[CMD]: 88888888888888888()");
+                puller.moveRotate(-120);
+                spool.moveRotateWithLoadAdjust(54, 50);
+                break;
+            case '9':
+                Serial.println("[CMD]: 999999999999999999()");
+                puller.moveRotate(-140);
+                spool.moveRotateWithLoadAdjust(54, 50);
+                break;
+            case '0':
+                Serial.println("[CMD]: 000000000000000000000()");
+                puller.moveRotate(-160);
+                spool.moveRotateWithLoadAdjust(54, 50);
                 break;
 
             case 'q':

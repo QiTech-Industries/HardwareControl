@@ -227,26 +227,67 @@ void Stepper::adjustSpeedByLoad() {
     // TODO: Actually use recipe-values (load-level, rpm)
 
     float gearRatio = (_config.gearRatio == 0) ? 1 : _config.gearRatio;
-    uint32_t currentSpeedUs = _stepper->getCurrentSpeedInUs(); // Current speed in Us ticks
-    uint32_t speedLimitLowUs = speedRpmToUs(50 / gearRatio, _microstepsPerRotation); // Slowest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
-    uint32_t speedLimitHighUs = speedRpmToUs(200 / gearRatio, _microstepsPerRotation); // Fastest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
+    //uint32_t speedDirection = _stepper->getCurrentSpeedInUs() < 0 ? -1 : 1;
+    uint32_t currentSpeedUs = abs(_stepper->getCurrentSpeedInUs()); // Current speed in Us ticks
+    uint32_t speedLimitLowUs = speedRpmToUs(10 / gearRatio, _microstepsPerRotation); // Slowest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
+    uint32_t speedLimitHighUs = speedRpmToUs(350 / gearRatio, _microstepsPerRotation); // Fastest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
     uint32_t speedNewFasterUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * 0.9)); // New speed in Us ticks when speeding up (smaller = faster)
     uint32_t speedNewSlowerUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * 1.1)); // New speed in Us ticks when slowing down (bigger = slower)
     uint32_t speedNewUs = currentSpeedUs;
-    if(getCurrentStall()<350) speedNewUs = speedNewSlowerUs; // TODO: Check for stall flag
-    if(getCurrentStall()>400) speedNewUs = speedNewFasterUs;
+
+
+    
+    // 
+    uint16_t stallLimitLow; // Minimal stall value, if current stall is below, the motor will accelerate
+    uint16_t stallLimitHigh; // Maximal stall value, if current stall is above, the motor will slow down
+    // Adjust default stall limits outside of optimal operation range
+    float currentSpeedRpm = speedUsToRpm(currentSpeedUs, _microstepsPerRotation);
+    if(currentSpeedRpm < 15) {
+        stallLimitHigh = 650;
+        stallLimitLow = 600;
+    } else if(currentSpeedRpm < 20) {
+        stallLimitHigh = 600;
+        stallLimitLow = 550;
+    } else if(currentSpeedRpm < 25) {
+        stallLimitHigh = 550;
+        stallLimitLow = 500;
+    } else if(currentSpeedRpm < 30) {
+        stallLimitHigh = 500;
+        stallLimitLow = 450;
+    } else if(currentSpeedRpm < 40) {
+        stallLimitHigh = 450;
+        stallLimitLow = 400;
+    } else if(currentSpeedRpm < 50) {
+        stallLimitHigh = 400;
+        stallLimitLow = 350;
+    } else if(currentSpeedRpm < 60) {
+        stallLimitHigh = 350;
+        stallLimitLow = 300;
+    } else {
+        stallLimitHigh = 300;
+        stallLimitLow = 250;
+    }
+
+    if(getCurrentStall()<stallLimitLow || _driver->stallguard()) speedNewUs = speedNewSlowerUs; // Slow down when stalled or load too high(low stall value = high load)
+    if(getCurrentStall()>stallLimitHigh) speedNewUs = speedNewFasterUs;
 
     /*
     logPrint(WARNING, WARNING,
-        "\n{sNwUs: %d, sNwR: %.2f, stlNw: %d, do: '%c', sChangeU: %d}",
-        currentSpeedUs,
-        speedUsToRpm(_stepper->getCurrentSpeedInUs(), _microstepsPerRotation),
+        //"\n{sNwUs: %d, sNwR: %.2f, stlNw: %d, do: '%c', sChangeU: %d}",
+        "\n{%.2f-(%c)->%.2f, %d < %d < %d}",
+        //speedLimitLowUs,
+        //speedNewSlowerUs,
+        speedUsToRpm(currentSpeedUs, _microstepsPerRotation),
+        ((speedNewUs == speedNewFasterUs) ? '+' : ((speedNewUs == speedNewSlowerUs) ? '-' : '=')), // Speed up needed based on load values?
+        speedUsToRpm(speedNewUs, _microstepsPerRotation),
+        //speedNewFasterUs,
+        //speedLimitHighUs,
+        stallLimitLow,
         getCurrentStall(), // Raw stall value
+        stallLimitHigh
         //_stepperStatus.load, // Current load value
         //_currentRecipe.load, // Target load value set by recipe
-        ((speedNewUs == speedNewFasterUs) ? '+' : ((speedNewUs == speedNewSlowerUs) ? '-' : '=')), // Speed up needed based on load values?
-        speedNewUs
-    ); // TODO - debug
+    ); // TODO - debugD
     */
 
     // Apply speed change
