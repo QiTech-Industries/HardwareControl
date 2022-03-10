@@ -237,7 +237,7 @@ void Stepper::adjustSpeedByLoad() {
     uint32_t currentSpeedUs = abs(_stepper->getCurrentSpeedInUs()); // Current speed in Us ticks
     float currentSpeedRpm = speedUsToRpm(currentSpeedUs, _microstepsPerRotation);
     uint32_t speedLimitLowUs = speedRpmToUs(abs(_currentRecipe.rpm), _microstepsPerRotation); // Slowest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
-    uint32_t speedLimitHighUs = speedRpmToUs(abs(_currentRecipe.rpm)+5, _microstepsPerRotation); // Fastest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
+    uint32_t speedLimitHighUs = speedRpmToUs(abs(_currentRecipe.rpm)+_currentRecipe.load, _microstepsPerRotation); // Fastest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
     uint32_t speedNewFasterUs = speedRpmToUs(currentSpeedRpm + 1, _microstepsPerRotation); // New speed in Us ticks when speeding up (smaller = faster)
     speedNewFasterUs = (speedNewFasterUs == currentSpeedUs ? currentSpeedUs-1 : speedNewFasterUs); // Make sure there is at least some kind of change despite calculating back and forth between rpm and us
     speedNewFasterUs = min(speedLimitLowUs, max(speedLimitHighUs, speedNewFasterUs));
@@ -288,7 +288,7 @@ void Stepper::adjustSpeedByLoad() {
 
     /*
     */
-    logPrint(WARNING, WARNING,
+    logPrint(_logging, INFO,
         //"\n{sNwUs: %d, sNwR: %.2f, stlNw: %d, do: '%c', sChangeU: %d}",
         "\n%lu: {%.2f-(%c)->%.2f, %d < %d < %d, stalled: %d, slower: %.2f, faster: %.2f}",
         millis(),
