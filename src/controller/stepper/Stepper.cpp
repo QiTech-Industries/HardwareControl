@@ -200,6 +200,12 @@ bool Stepper::isStartSpeedReached(){
 }
 
 void Stepper::adjustSpeedByLoad() {
+    // Prevent too frequent adjustment since stall-values can't be measured that often
+    /*
+    unsigned long now = millis();
+    if((_lastAdjustTime + 60) > now) return; // TODO: handle overflow
+    _lastAdjustTime = now;
+    */
     /*
     // TODO
     // Calculate the necessary speed-adjustment using a pid-algorithm
@@ -226,41 +232,50 @@ void Stepper::adjustSpeedByLoad() {
 
     // TODO: Actually use recipe-values (load-level, rpm)
 
-    float gearRatio = (_config.gearRatio == 0) ? 1 : _config.gearRatio;
+    uint16_t currentStall = getCurrentStall();
     //uint32_t speedDirection = _stepper->getCurrentSpeedInUs() < 0 ? -1 : 1;
     uint32_t currentSpeedUs = abs(_stepper->getCurrentSpeedInUs()); // Current speed in Us ticks
-    uint32_t speedLimitLowUs = speedRpmToUs(10 / gearRatio, _microstepsPerRotation); // Slowest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
-    uint32_t speedLimitHighUs = speedRpmToUs(350 / gearRatio, _microstepsPerRotation); // Fastest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
-    uint32_t speedNewFasterUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * 0.9)); // New speed in Us ticks when speeding up (smaller = faster)
-    uint32_t speedNewSlowerUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * 1.1)); // New speed in Us ticks when slowing down (bigger = slower)
+    float currentSpeedRpm = speedUsToRpm(currentSpeedUs, _microstepsPerRotation);
+    uint32_t speedLimitLowUs = speedRpmToUs(abs(_currentRecipe.rpm), _microstepsPerRotation); // Slowest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
+    uint32_t speedLimitHighUs = speedRpmToUs(abs(_currentRecipe.rpm)+5, _microstepsPerRotation); // Fastest acceptable speed in Us ticks. Needed since load-measurement does not properly work for all speeds
+    uint32_t speedNewFasterUs = speedRpmToUs(currentSpeedRpm + 1, _microstepsPerRotation); // New speed in Us ticks when speeding up (smaller = faster)
+    speedNewFasterUs = (speedNewFasterUs == currentSpeedUs ? currentSpeedUs-1 : speedNewFasterUs); // Make sure there is at least some kind of change despite calculating back and forth between rpm and us
+    speedNewFasterUs = min(speedLimitLowUs, max(speedLimitHighUs, speedNewFasterUs));
+    uint32_t speedNewSlowerUs = speedRpmToUs(currentSpeedRpm - 1, _microstepsPerRotation); // New speed in Us ticks when slowing down (bigger = slower)
+    speedNewSlowerUs = (speedNewSlowerUs == currentSpeedUs ? currentSpeedUs+1 : speedNewSlowerUs); // Make sure there is at least some kind of change despite calculating back and forth between rpm and us
+    speedNewSlowerUs = min(speedLimitLowUs, max(speedLimitHighUs, speedNewSlowerUs));
+    //uint32_t speedNewFasterUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * 0.95)); // New speed in Us ticks when speeding up (smaller = faster)
+    //uint32_t speedNewSlowerUs = min(speedLimitLowUs, max(speedLimitHighUs, currentSpeedUs * (currentStall==0 ? 2 : 1.2))); // New speed in Us ticks when slowing down (bigger = slower)
     uint32_t speedNewUs = currentSpeedUs;
 
-
-    
-    // 
     uint16_t stallLimitLow; // Minimal stall value, if current stall is below, the motor will accelerate
     uint16_t stallLimitHigh; // Maximal stall value, if current stall is above, the motor will slow down
     // Adjust default stall limits outside of optimal operation range
-    float currentSpeedRpm = speedUsToRpm(currentSpeedUs, _microstepsPerRotation);
-    if(currentSpeedRpm < 15) {
+    if(currentSpeedRpm < 8) {
+        stallLimitHigh = 700;
+        stallLimitLow = 650;
+    } else if(currentSpeedRpm < 10) {
         stallLimitHigh = 650;
         stallLimitLow = 600;
-    } else if(currentSpeedRpm < 20) {
+    } else if(currentSpeedRpm < 12) {
         stallLimitHigh = 600;
         stallLimitLow = 550;
-    } else if(currentSpeedRpm < 25) {
+    } else if(currentSpeedRpm < 15) {
         stallLimitHigh = 550;
         stallLimitLow = 500;
-    } else if(currentSpeedRpm < 30) {
+    } else if(currentSpeedRpm < 20) {
         stallLimitHigh = 500;
         stallLimitLow = 450;
-    } else if(currentSpeedRpm < 40) {
+    } else if(currentSpeedRpm < 25) {
         stallLimitHigh = 450;
         stallLimitLow = 400;
-    } else if(currentSpeedRpm < 50) {
+    } else if(currentSpeedRpm < 30) {
+        stallLimitHigh = 450;
+        stallLimitLow = 400;
+    } else if(currentSpeedRpm < 35) {
         stallLimitHigh = 400;
         stallLimitLow = 350;
-    } else if(currentSpeedRpm < 60) {
+    } else if(currentSpeedRpm < 40) {
         stallLimitHigh = 350;
         stallLimitLow = 300;
     } else {
@@ -268,33 +283,37 @@ void Stepper::adjustSpeedByLoad() {
         stallLimitLow = 250;
     }
 
-    if(getCurrentStall()<stallLimitLow || _driver->stallguard()) speedNewUs = speedNewSlowerUs; // Slow down when stalled or load too high(low stall value = high load)
-    if(getCurrentStall()>stallLimitHigh) speedNewUs = speedNewFasterUs;
+    if(currentStall<stallLimitLow || _driver->stallguard()) speedNewUs = speedNewSlowerUs; // Slow down when stalled or load too high(low stall value = high load)
+    if(currentStall>stallLimitHigh) speedNewUs = speedNewFasterUs;
 
     /*
+    */
     logPrint(WARNING, WARNING,
         //"\n{sNwUs: %d, sNwR: %.2f, stlNw: %d, do: '%c', sChangeU: %d}",
-        "\n{%.2f-(%c)->%.2f, %d < %d < %d}",
+        "\n%lu: {%.2f-(%c)->%.2f, %d < %d < %d, stalled: %d, slower: %.2f, faster: %.2f}",
+        millis(),
         //speedLimitLowUs,
-        //speedNewSlowerUs,
         speedUsToRpm(currentSpeedUs, _microstepsPerRotation),
         ((speedNewUs == speedNewFasterUs) ? '+' : ((speedNewUs == speedNewSlowerUs) ? '-' : '=')), // Speed up needed based on load values?
         speedUsToRpm(speedNewUs, _microstepsPerRotation),
-        //speedNewFasterUs,
         //speedLimitHighUs,
         stallLimitLow,
-        getCurrentStall(), // Raw stall value
-        stallLimitHigh
+        currentStall, // Raw stall value
+        stallLimitHigh,
+        _driver->stallguard(),
+        speedUsToRpm(speedNewSlowerUs, _microstepsPerRotation),
+        speedUsToRpm(speedNewFasterUs, _microstepsPerRotation)
         //_stepperStatus.load, // Current load value
         //_currentRecipe.load, // Target load value set by recipe
     ); // TODO - debugD
-    */
 
     // Apply speed change
     if(currentSpeedUs != speedNewUs) {
         _stepper->setSpeedInUs(speedNewUs);
         _stepper->applySpeedAcceleration();
     }
+    /*
+    */
 }
 
 // Synchronous methods

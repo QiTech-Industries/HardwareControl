@@ -19,7 +19,7 @@ stepperConfiguration_s ferrariConfig = {
     .maxCurrent = 700,
     .microstepsPerStep = 32,
     .stepsPerRotation = 200,
-    .mmPerRotation = 10,
+    .mmPerRotation = 8,
     .gearRatio = 1,
     .pins = {
         .en = 12,
@@ -48,6 +48,8 @@ Stepper spool = Stepper(spoolConfig, &engine);
 Stepper ferrari = Stepper(ferrariConfig, &engine);
 Stepper puller = Stepper(pullerConfig, &engine);
 
+uint16_t TEMP_SPEED_RPM = 5;
+
 void setup() {
     SPI.begin();
     Serial.begin(115200);
@@ -69,79 +71,114 @@ void loop() {
         uint8_t newCommand = Serial.read();
         switch(newCommand){
             // Basic commands
+            case 'c':
+                spool.moveRotate(3);
+                spool.handle();
+                for(int i=0;i<5;++i){
+                    delay(1000);
+                    Serial.print(".");
+                }
+                Serial.print("\n");
+                for(int i=3; i<=100; ++i){
+                    spool.adjustMoveSpeed(i);
+                    spool.handle();
+                    delay(2000);
+                    Serial.printf("rpm;%d;", i);
+                    for(int k=0; k<50; ++k){
+                        delay(100);
+                        Serial.printf("%d%c", spool.getCurrentStall(), (k==49 ? '\n': ';'));
+                    }
+                }
+                spool.switchModeOff();
+                break;
             case 'h': // Home
                 Serial.println("[CMD]: home()");
-                ferrari.moveHome(60);
+                //ferrari.moveHome(70);
+                ferrari.movePosition(70, 63);
+                break;
+            case 'H': // Home
+                Serial.println("[CMD]: home()");
+                ferrari.moveOscillate(2, 63, 108);
                 break;
             case 'p': // Position
                 Serial.println("[CMD]: movePosition()");
                 ferrari.movePosition(80, 80);
                 break;
-
+            
+            case '.':
+                spool.moveRotateWithLoadAdjust(TEMP_SPEED_RPM, 0);
+                break;
+            case '+':
+                Serial.printf("\nSpeed+: %d\t", TEMP_SPEED_RPM);
+                TEMP_SPEED_RPM += 1;
+                spool.adjustMoveSpeed(TEMP_SPEED_RPM);
+                break;
+            case '-':
+                TEMP_SPEED_RPM -= 1;
+                Serial.printf("\nSpeed-: %d\t", TEMP_SPEED_RPM);
+                spool.adjustMoveSpeed(TEMP_SPEED_RPM);
+                break;
 
             case '1': // Oscillate
                 Serial.println("[CMD]: 111111111111111111111()");
-                puller.moveRotate(-2.5);
-                spool.moveRotateWithLoadAdjust(5, 50);
+                puller.moveRotate(-20);
+                spool.moveRotateWithLoadAdjust(-5, 50);
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
             case '2': // Oscillate
                 Serial.println("[CMD]: 222222222222222222222222()");
-                puller.moveRotate(-5);
-                spool.moveRotateWithLoadAdjust(5, 50);
+                puller.moveRotate(-30);
+                spool.moveRotateWithLoadAdjust(-7.5, 50);
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
             case '3': // Oscillate
                 Serial.println("[CMD]: 333333333333333333333333333333333()");
-                puller.moveRotate(-7.5);
-                spool.moveRotateWithLoadAdjust(5, 50);
+                puller.moveRotate(-40);
+                spool.moveRotateWithLoadAdjust(-10, 50);
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
             case '4': // Oscillate
                 Serial.println("[CMD]: 44444444444444444444444444444444()");
-                puller.moveRotate(-10);
-                spool.moveRotateWithLoadAdjust(54, 50);
+                puller.moveRotate(-50);
+                spool.moveRotateWithLoadAdjust(-12.5, 50);
                 // ferrari.moveOscillate(30, 80, 130);
                 break;
             case '5':
                 Serial.println("[CMD]: 555555555555555555()");
                 puller.moveRotate(-60);
-                spool.moveRotateWithLoadAdjust(54, 50);
+                spool.moveRotateWithLoadAdjust(-15, 50);
                 break;
             case '6':
                 Serial.println("[CMD]: 666666666666()");
                 puller.moveRotate(-80);
-                spool.moveRotateWithLoadAdjust(54, 50);
+                spool.moveRotateWithLoadAdjust(-20, 50);
                 break;
             case '7':
                 Serial.println("[CMD]: 777777777777777()");
                 puller.moveRotate(-100);
-                spool.moveRotateWithLoadAdjust(54, 50);
+                spool.moveRotateWithLoadAdjust(-25, 50);
                 break;
             case '8':
                 Serial.println("[CMD]: 88888888888888888()");
                 puller.moveRotate(-120);
-                spool.moveRotateWithLoadAdjust(54, 50);
+                spool.moveRotateWithLoadAdjust(-30, 50);
                 break;
             case '9':
                 Serial.println("[CMD]: 999999999999999999()");
                 puller.moveRotate(-140);
-                spool.moveRotateWithLoadAdjust(54, 50);
+                spool.moveRotateWithLoadAdjust(-35, 50);
                 break;
             case '0':
                 Serial.println("[CMD]: 000000000000000000000()");
                 puller.moveRotate(-160);
-                spool.moveRotateWithLoadAdjust(54, 50);
+                spool.moveRotateWithLoadAdjust(-40, 50);
                 break;
 
             case 'q':
-                ferrari.movePosition(70, 50);
+                ferrari.movePosition(70, 80);
                 break;
             case 'b':
                 ferrari.movePosition(70, 100);
-                break;
-            case 'c':
-                ferrari.moveOscillate(70, 50, 100);
                 break;
             case 'v':
                 ferrari.adjustMoveSpeed(30);
@@ -154,7 +191,7 @@ void loop() {
             case 'u': // Unwind
                 Serial.println("[CMD]: moveRotate()");
                 spool.switchModeOff();
-                puller.moveRotate(60);
+                puller.moveRotate(40);
                 break;
             case 'R': // Rotate
                 Serial.println("[CMD]: moveRotate()");

@@ -39,13 +39,15 @@ struct stepperStatus_s {
 
 class Stepper : public BaseController{
    private:
+    unsigned long _lastAdjustTime = 0; // millis() of last time the speed was adjusted with adjustSpeedByLoad()
+
     // Drivers
     TMC2130Stepper *_driver;
     FastAccelStepperEngine *_engine = NULL;
     FastAccelStepper *_stepper = NULL;
 
     // Hardcoded configuration
-    const int8_t DRIVER_STALL_VALUE = 8;  // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the stall flag will be triggered. Higher = less sensitive reading, lower = more sensitive reading
+    const int8_t DRIVER_STALL_VALUE = 9;  // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the stall flag will be triggered. Higher = less sensitive reading, lower = more sensitive reading
     const uint16_t DEFAULT_ACCELERATION = 10000;  // Default stepper acceleration
     const float HOMING_SPEED_RPM = 60; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
     const uint8_t HOMING_BUMPS_NEEDED = 2; // Number of consecutive bumps (100% load) needed to be sure that we have found the home position and not just measured a glitched load value
@@ -104,13 +106,6 @@ class Stepper : public BaseController{
     bool checkNeedsHome(stepperMode_e targetMode, stepperMode_e currentMode);
 
     /**
-     * @brief Get the current raw stall value from the driver
-     *
-     * @return uint16_t raw load 0...1023
-     */
-    uint16_t getCurrentStall();
-
-    /**
      * @brief Update _current struct with current rpm, load, position
      *
      */
@@ -145,6 +140,14 @@ class Stepper : public BaseController{
 
    public:
     Stepper(stepperConfiguration_s& config, FastAccelStepperEngine* engine);
+
+
+    /**
+     * @brief Get the current raw stall value from the driver
+     *
+     * @return uint16_t raw load 0...1023
+     */
+    uint16_t getCurrentStall(); // TODO: Temporarily public for testing
 
     /**
      * @brief Initialise controller according to set configuration
