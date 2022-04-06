@@ -378,7 +378,7 @@ void Stepper::handle() {
             // Initiate homing instead of next command
             _currentRecipe = _defaultRecipe;
             _currentRecipe.mode = HOMING;
-            _currentRecipe.rpm = HOMING_SPEED_RPM;
+            _currentRecipe.rpm = _homingSpeedRpm;
             _newCommand = true;
         } else {
             _currentRecipe = _targetRecipe;
@@ -509,4 +509,14 @@ void Stepper::adjustAcceleration(uint16_t newAcceleration){
 
 uint16_t Stepper::getAcceleration(){
     return _acceleration;
+}
+
+// Getter-method
+float Stepper::getHomingSpeed(){
+    return _homingSpeedRpm;
+}
+
+// Setter-method
+void Stepper::setHomingSpeed(float newSpeedRpm){
+    _homingSpeedRpm = (newSpeedRpm <= 0) ? DEFAULT_HOMING_SPEED_RPM : newSpeedRpm;
 }
