@@ -31,7 +31,7 @@ void Stepper::init() {
     _driver->blank_time(5);
     _driver->rms_current(_config.maxCurrent);
     _driver->microsteps(_config.microstepsPerStep);
-    _driver->sgt(DRIVER_STALL_VALUE);
+    _driver->sgt(_config.stall);
     _driver->sfilt(true);
 
     // StallGuard/Coolstep config
@@ -392,6 +392,7 @@ void Stepper::handle() {
     // Handle the current recipe, that was already started at some point in the past
     switch(_currentRecipe.mode){
         case HOMING:
+            logPrint(WARNING, WARNING, "(%d)Ferrariload: %d\n", _config.stall, _stepperStatus.load); // TODO - debug
             // Wait for stopper to be hit to set home
             if (isStartSpeedReached() && _stepperStatus.load == 100) {
                 _homeConsecutiveBumpCounter++;

@@ -17,6 +17,7 @@ struct stepperConfiguration_s {
     float stepsPerRotation;      // hard steps per rotation (NEMA17 - 200)
     float mmPerRotation;  // mm stepper moves, mm filament pulled every rotation
     float gearRatio; // gear-dependend ratio for motor-rotations to the rotations of the moved object (like a spool). 1 = 1:1 = direct 
+    int8_t stall; // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the stall flag will be triggered. Higher = less sensitive reading, lower = more sensitive reading
     struct Pins {
         uint8_t en;    // SPI enable pin
         uint8_t dir;   // stepper direcion pin
