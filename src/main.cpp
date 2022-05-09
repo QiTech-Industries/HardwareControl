@@ -61,6 +61,11 @@ void setup() {
     puller.init();
     ferrari.init();
 
+    McValidatorEsp32 testValidator;
+    uint8_t pins[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    uint16_t pinLen = 10;
+    Serial.printf("digiPinTest: %d\n", testValidator.isDigitalPinsValid(pins, pinLen));
+
     // Set starting commands
     // ferrari.movePosition(80, 80);
 }

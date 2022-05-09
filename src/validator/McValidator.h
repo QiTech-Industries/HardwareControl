@@ -28,4 +28,14 @@ class McValidator{
          * @return false pin does not exist
          */
         bool isAnalogPinValid(uint8_t pin);
+
+        /**
+         * @brief Checks multiple digital pins for validity, using isDigitalPinValid()
+         * 
+         * @param pins pin-numbers to be checked
+         * @param pinsLength Size of pin-array
+         * @return true all pins are valid
+         * @return false one or more pins are invalid
+         */
+        bool isDigitalPinsValid(uint8_t pins[], uint16_t pinsLength);
 };
