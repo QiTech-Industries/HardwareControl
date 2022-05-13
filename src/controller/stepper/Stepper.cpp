@@ -16,11 +16,8 @@ Stepper::Stepper(stepperConfiguration_s& config, FastAccelStepperEngine* engine)
 
 void Stepper::init() {
     // Check pin-validity
-    if(!_mcValidator.isDigitalPinValid(_config.pins.cs)
-        || !_mcValidator.isDigitalPinValid(_config.pins.dir)
-        || !_mcValidator.isDigitalPinValid(_config.pins.en)
-        || !_mcValidator.isDigitalPinValid(_config.pins.step)
-    ) return;
+    uint8_t pins[4] = {_config.pins.cs, _config.pins.dir, _config.pins.en, _config.pins.step};
+    if(!_mcValidator.isDigitalPin(pins, 4)) return;
     
     _microstepsPerRotation = _config.stepsPerRotation * _config.microstepsPerStep * _config.gearRatio;
     _driver = new TMC2130Stepper(_config.pins.cs);

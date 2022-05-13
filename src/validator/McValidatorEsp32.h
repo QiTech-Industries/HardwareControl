@@ -12,13 +12,13 @@
 class McValidatorEsp32 : public virtual McValidator{
     public:
         /**
-         * @brief Checks whether a digital pin is valid and exists
+         * @brief Checks whether a digital pin is valid and
          * 
          * @param pin Pin-number
          * @return true pin exists
          * @return false pin does not exist
          */
-        bool isDigitalPinValid(uint8_t pin);
+        bool isDigitalPin(uint8_t pin);
         
         /**
          * @brief Checks whether an analog pin is valid and exists
@@ -27,5 +27,8 @@ class McValidatorEsp32 : public virtual McValidator{
          * @return true pin exists
          * @return false pin does not exist
          */
-        bool isAnalogPinValid(uint8_t pin);
+        bool isAnalogPin(uint8_t pin);
+
+        // inherit function overload from base class isDigitalPin(uint8_t pins[], uint16_t pinsLength)
+        using McValidator::isDigitalPin;
 };

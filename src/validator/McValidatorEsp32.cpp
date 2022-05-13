@@ -5,7 +5,7 @@
 // Selfmade
 // Project
 
-bool McValidatorEsp32::isDigitalPinValid(uint8_t pin){
+bool McValidatorEsp32::isDigitalPin(uint8_t pin){
     switch(pin){
         // SPI-pins
             case 18:
@@ -34,7 +34,7 @@ bool McValidatorEsp32::isDigitalPinValid(uint8_t pin){
     }
 }
 
-bool McValidatorEsp32::isAnalogPinValid(uint8_t pin){
+bool McValidatorEsp32::isAnalogPin(uint8_t pin){
     switch(pin){
         // SPI-pins
             case 18:

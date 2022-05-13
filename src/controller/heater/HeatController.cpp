@@ -120,10 +120,8 @@ void HeatController::handle(){
 
 void HeatController::init(){
     _controllerState = INVALID;
-    if(!_mcValidator.isDigitalPinValid(_config.pinHeat)) return;
-    if(!_mcValidator.isDigitalPinValid(_config.pinSensorSo)) return;
-    if(!_mcValidator.isDigitalPinValid(_config.pinSensorCs)) return;
-    if(!_mcValidator.isDigitalPinValid(_config.pinSensorSck)) return;
+    uint8_t pins[4] = {_config.pinHeat, _config.pinSensorSo, _config.pinSensorCs, _config.pinSensorSck};
+    if(!_mcValidator.isDigitalPin(pins, 4)) return;
     pinMode(_config.pinHeat, OUTPUT);
     pinMode(_config.pinSensorCs, OUTPUT);
     pinMode(_config.pinSensorSo, INPUT);
