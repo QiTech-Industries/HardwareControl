@@ -6,6 +6,7 @@ stepperConfiguration_s spoolConfig = {.stepperId = "spool",
                                       .stepsPerRotation = 200,
                                       .mmPerRotation = 2800,
                                       .gearRatio = 5.18,
+                                      .stall = 8,
                                       .pins = {
                                           .en = 12,
                                           .dir = 16,
@@ -18,6 +19,7 @@ stepperConfiguration_s ferrariConfig = {.stepperId = "ferrari",
                                         .stepsPerRotation = 200,
                                         .mmPerRotation = 8,
                                         .gearRatio = 1,
+                                        .stall = 5,  // 5 = new ferrari-motor, 10 (or 9) = old ferrari-motor
                                         .pins = {
                                             .en = 12,
                                             .dir = 14,
@@ -30,6 +32,7 @@ stepperConfiguration_s pullerConfig = {.stepperId = "puller",
                                        .stepsPerRotation = 200,
                                        .mmPerRotation = 10,
                                        .gearRatio = 1,
+                                       .stall = 8,
                                        .pins = {
                                            .en = 12,
                                            .dir = 27,
@@ -93,7 +96,7 @@ void loop() {
             case 'h':  // Home
                 Serial.println("[CMD]: home()");
                 // ferrari.moveHome(70);
-                ferrari.movePosition(70, 63);
+                ferrari.movePosition(120, 135);
                 break;
             case 'H':  // Home
                 Serial.println("[CMD]: home()");

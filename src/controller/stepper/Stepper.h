@@ -47,8 +47,6 @@ class Stepper : public BaseController {
     FastAccelStepper *_stepper = NULL;
 
     // Hardcoded configuration
-    const int8_t DRIVER_STALL_VALUE = 8;  // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the
-                                          // stall flag will be triggered. Higher = less sensitive reading, lower = more sensitive reading
     const uint16_t DEFAULT_ACCELERATION = 10000;  // Default stepper acceleration
     const float DEFAULT_HOMING_SPEED_RPM = 60;    // Default homing speed in rotations per minute
     const uint8_t HOMING_BUMPS_NEEDED = 2;        // Number of consecutive bumps (100% load) needed to be sure that we have found the home
