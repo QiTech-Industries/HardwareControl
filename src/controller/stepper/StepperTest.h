@@ -15,9 +15,10 @@ struct stepperConfiguration_s {
     uint16_t maxCurrent;         // maximum average motor current
     uint16_t microstepsPerStep;  // subdivion count of every hard step
     float stepsPerRotation;      // hard steps per rotation (NEMA17 - 200)
-    float mmPerRotation;  // mm stepper moves, mm filament pulled every rotation
-    float gearRatio; // gear-dependend ratio for motor-rotations to the rotations of the moved object (like a spool). 1 = 1:1 = direct 
-    int8_t stall; // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the stall flag will be triggered. Higher = less sensitive reading, lower = more sensitive reading
+    float mmPerRotation;         // mm stepper moves, mm filament pulled every rotation
+    float gearRatio;  // gear-dependend ratio for motor-rotations to the rotations of the moved object (like a spool). 1 = 1:1 = direct
+    int8_t stall;     // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the stall flag will be
+                      // triggered. Higher = less sensitive reading, lower = more sensitive reading
     struct Pins {
         uint8_t en;    // SPI enable pin
         uint8_t dir;   // stepper direcion pin
@@ -30,37 +31,22 @@ struct stepperConfiguration_s {
  * @brief stepper operation modes, at every time only one mode possible
  *
  */
-enum stepperMode_e {
-    ROTATING,
-    ADJUSTING,
-    HOMING,
-    POSITIONING,
-    OSCILLATING_FORWARD,
-    OSCILLATING_BACKWARD,
-    STANDBY,
-    OFF
-};
+enum stepperMode_e { ROTATING, ADJUSTING, HOMING, POSITIONING, OSCILLATING_FORWARD, OSCILLATING_BACKWARD, STANDBY, OFF };
 
 // Manually calibrated lookup table with sorted stall values when no load
 // applied (lower value means higher load)
-const uint16_t minLoad[40] = {
-    446, 450, 448, 447, 452, 459, 461, 465, 465, 470, 472, 473, 477, 480,
-    479, 489, 490, 492, 495, 472, 505, 505, 515, 517, 526, 532, 531, 539,
-    545, 579, 621, 612, 630, 630, 653, 669, 720, 794, 926, 1023};
+const uint16_t minLoad[40] = {446, 450, 448, 447, 452, 459, 461, 465, 465, 470, 472, 473, 477, 480, 479, 489, 490, 492, 495, 472,
+                              505, 505, 515, 517, 526, 532, 531, 539, 545, 579, 621, 612, 630, 630, 653, 669, 720, 794, 926, 1023};
 
 // Manually calibrated lookup table with sorted stall values when max load
 // applied (lower value means higher load)
-const uint16_t maxLoad[40] = {103, 81,  89,  184, 124, 106, 129, 176, 166, 182,
-                              96,  127, 167, 142, 215, 144, 197, 156, 167, 147,
-                              209, 208, 185, 129, 124, 244, 133, 190, 216, 170,
-                              268, 131, 296, 172, 282, 262, 281, 452, 532, 922};
+const uint16_t maxLoad[40] = {103, 81,  89,  184, 124, 106, 129, 176, 166, 182, 96,  127, 167, 142, 215, 144, 197, 156, 167, 147,
+                              209, 208, 185, 129, 124, 244, 133, 190, 216, 170, 268, 131, 296, 172, 282, 262, 281, 452, 532, 922};
 
 // Lookup table with calibrated speeds in time US between steps, sorted from
 // highest to lowest speed
-const uint16_t speeds[40] = {
-    90,  92,  95,  97,  100, 103, 106, 109, 113, 116,  120,  124, 129, 134,
-    139, 144, 150, 157, 164, 172, 180, 190, 201, 212,  226,  241, 258, 278,
-    301, 329, 361, 402, 452, 517, 603, 723, 904, 1206, 1809, 3619};
+const uint16_t speeds[40] = {90,  92,  95,  97,  100, 103, 106, 109, 113, 116, 120, 124, 129, 134, 139, 144, 150, 157,  164,  172,
+                             180, 190, 201, 212, 226, 241, 258, 278, 301, 329, 361, 402, 452, 517, 603, 723, 904, 1206, 1809, 3619};
 
 /**
  * @brief Find index of closest matching number in array via binary seach
@@ -70,9 +56,7 @@ const uint16_t speeds[40] = {
  * @param length item count in input array
  * @return uint16_t index of cosest matching number
  */
-uint16_t indexOfClosestNumberInSortedArray(const uint16_t number,
-                                           const uint16_t *arr,
-                                           const uint8_t length);
+uint16_t indexOfClosestNumberInSortedArray(const uint16_t number, const uint16_t *arr, const uint8_t length);
 
 /**
  * @brief Convert to text representation
@@ -90,8 +74,7 @@ void modeToString(const stepperMode_e mode, char *out);
  * @param upper upper range limit
  * @return uint16_t adjusted number in range
  */
-uint16_t putNumberInRange(const uint16_t number, const uint16_t lower,
-                          const uint16_t upper);
+uint16_t putNumberInRange(const uint16_t number, const uint16_t lower, const uint16_t upper);
 
 /**
  * @brief Convert Us between steps in rotations per minute
@@ -122,8 +105,7 @@ uint32_t speedRpmToUs(float rpm, const uint32_t stepsPerRotation);
  * @param length length of all lookup tables (calibration point count)
  * @return uint8_t stepper load in %, 0 = no load, 100 = full load
  */
-uint8_t stallToLoadPercent(const uint16_t speedUs, const uint16_t stall,
-                           const uint16_t *speeds, const uint16_t *minLoad,
+uint8_t stallToLoadPercent(const uint16_t speedUs, const uint16_t stall, const uint16_t *speeds, const uint16_t *minLoad,
                            const uint16_t *maxLoad, uint8_t length);
 
 /**
@@ -134,8 +116,7 @@ uint8_t stallToLoadPercent(const uint16_t speedUs, const uint16_t stall,
  * @param mmPerRotation mm stepper moves per rotation
  * @return float position in mm
  */
-float positionToMm(int32_t position, const uint32_t stepsPerRotation,
-                   const float mmPerRotation);
+float positionToMm(int32_t position, const uint32_t stepsPerRotation, const float mmPerRotation);
 
 /**
  * @brief Convert position in mm to ticks understandable by FastAccelStepper
@@ -145,5 +126,4 @@ float positionToMm(int32_t position, const uint32_t stepsPerRotation,
  * @param mmPerRotation mm stepper moves per rotation
  * @return int32_t position in ticks understandable by FastAccelStepper
  */
-int32_t mmToPosition(float mm, const uint32_t stepsPerRotation,
-                     const float mmPerRotation);
+int32_t mmToPosition(float mm, const uint32_t stepsPerRotation, const float mmPerRotation);
