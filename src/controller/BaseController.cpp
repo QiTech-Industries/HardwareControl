@@ -5,6 +5,4 @@
 // Selfmade
 // Project
 
-void BaseController::setDebuggingLevel(loggingLevel_e level){
-    _logging = level;
-}
+void BaseController::setDebuggingLevel(loggingLevel_e level) { _logging = level; }

@@ -1,15 +1,13 @@
 // Related
 #include "StepperTest.h"
 // System / External
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
-#include <math.h>
 // Selfmade
 // Project
 
-uint16_t indexOfClosestNumberInSortedArray(const uint16_t number,
-                                           const uint16_t *arr,
-                                           const uint8_t length) {
+uint16_t indexOfClosestNumberInSortedArray(const uint16_t number, const uint16_t *arr, const uint8_t length) {
     if (number < arr[0]) return 0;
     if (number > arr[length - 1]) return length - 1;
 
@@ -33,14 +31,11 @@ uint16_t indexOfClosestNumberInSortedArray(const uint16_t number,
 }
 
 void modeToString(const stepperMode_e mode, char *out) {
-    const char *states[8] = {
-        "ROTATING",        "ADJUSTING",        "HOMING", "POSITIONING",
-        "OSCILLATING_FOR", "OSCILLATING_BACK", "STANDBY",  "OFF"};
+    const char *states[8] = {"ROTATING", "ADJUSTING", "HOMING", "POSITIONING", "OSCILLATING_FOR", "OSCILLATING_BACK", "STANDBY", "OFF"};
     strcpy(out, states[mode]);
 }
 
-uint16_t putNumberInRange(const uint16_t number, const uint16_t lower,
-                          const uint16_t upper) {
+uint16_t putNumberInRange(const uint16_t number, const uint16_t lower, const uint16_t upper) {
     if (upper < number) return upper;
     if (lower > number) return lower;
     return number;
@@ -60,8 +55,7 @@ uint32_t speedRpmToUs(float rpm, const uint32_t stepsPerRotation) {
     return 60000000 / rpm / stepsPerRotation;
 }
 
-uint8_t stallToLoadPercent(const uint16_t speedUs, const uint16_t stall,
-                           const uint16_t *speeds, const uint16_t *minLoad,
+uint8_t stallToLoadPercent(const uint16_t speedUs, const uint16_t stall, const uint16_t *speeds, const uint16_t *minLoad,
                            const uint16_t *maxLoad, uint8_t length) {
     // maxLoad values are always lower than minLoad values
     uint8_t index = indexOfClosestNumberInSortedArray(speedUs, speeds, length);
@@ -71,14 +65,12 @@ uint8_t stallToLoadPercent(const uint16_t speedUs, const uint16_t stall,
     return round((min - normedStall) * 100 / (min - max));
 };
 
-float positionToMm(int32_t position, const uint32_t stepsPerRotation,
-                   const float mmPerRotation) {
+float positionToMm(int32_t position, const uint32_t stepsPerRotation, const float mmPerRotation) {
     if (mmPerRotation == 0) return 0;
     return position * mmPerRotation / stepsPerRotation;
 }
 
-int32_t mmToPosition(float mm, const uint32_t stepsPerRotation,
-                     const float mmPerRotation) {
+int32_t mmToPosition(float mm, const uint32_t stepsPerRotation, const float mmPerRotation) {
     if (mmPerRotation == 0) return 0;
     return mm * stepsPerRotation / mmPerRotation;
 }
