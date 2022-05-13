@@ -6,8 +6,8 @@
 #include <TMCStepper.h>
 // Selfmade
 // Project
-#include "StepperTest.h"
 #include "../BaseController.h"
+#include "StepperTest.h"
 
 using TMC2130_n::DRV_STATUS_t;
 
@@ -16,11 +16,11 @@ using TMC2130_n::DRV_STATUS_t;
  *
  */
 struct stepperRecipe_s {
-    stepperMode_e mode;        // Operation mode
-    float rpm;          // Speed in rotations per minute
-    uint8_t load;       // Motorload in %, 0 = no load, 100 = full load
-    int32_t position1;  // Start position
-    int32_t position2;  // End position
+    stepperMode_e mode;  // Operation mode
+    float rpm;           // Speed in rotations per minute
+    uint8_t load;        // Motorload in %, 0 = no load, 100 = full load
+    int32_t position1;   // Start position
+    int32_t position2;   // End position
 };
 
 /**
@@ -28,18 +28,18 @@ struct stepperRecipe_s {
  *
  */
 struct stepperStatus_s {
-    float rpm;         // Steper Rotations per minute
-    uint8_t load;      // Stepper load in %, 0 = no load, 100 = full load
-    int32_t position;  // stepper position
-    bool errorOverheating; // Warning Stepper Driver overheated
-    bool errorShutdownHeat; // Stepper shut down due to overheated driver
-    bool errorShutdownShortCircuit; // Stepper shut down due to short circuit
-    bool errorOpenLoad; // Stepper driver detected open load
+    float rpm;                       // Steper Rotations per minute
+    uint8_t load;                    // Stepper load in %, 0 = no load, 100 = full load
+    int32_t position;                // stepper position
+    bool errorOverheating;           // Warning Stepper Driver overheated
+    bool errorShutdownHeat;          // Stepper shut down due to overheated driver
+    bool errorShutdownShortCircuit;  // Stepper shut down due to short circuit
+    bool errorOpenLoad;              // Stepper driver detected open load
 };
 
-class Stepper : public BaseController{
+class Stepper : public BaseController {
    private:
-    unsigned long _lastAdjustTime = 0; // millis() of last time the speed was adjusted with adjustSpeedByLoad()
+    unsigned long _lastAdjustTime = 0;  // millis() of last time the speed was adjusted with adjustSpeedByLoad()
 
     // Drivers
     TMC2130Stepper *_driver;
@@ -47,29 +47,32 @@ class Stepper : public BaseController{
     FastAccelStepper *_stepper = NULL;
 
     // Hardcoded configuration
-    const int8_t DRIVER_STALL_VALUE = 8;  // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the stall flag will be triggered. Higher = less sensitive reading, lower = more sensitive reading
+    const int8_t DRIVER_STALL_VALUE = 8;  // [-64..63] stall value of the tmcstepper-driver. Defines when the load value will read 0 and the
+                                          // stall flag will be triggered. Higher = less sensitive reading, lower = more sensitive reading
     const uint16_t DEFAULT_ACCELERATION = 10000;  // Default stepper acceleration
-    const float DEFAULT_HOMING_SPEED_RPM = 60; // Default homing speed in rotations per minute
-    const uint8_t HOMING_BUMPS_NEEDED = 2; // Number of consecutive bumps (100% load) needed to be sure that we have found the home position and not just measured a glitched load value
+    const float DEFAULT_HOMING_SPEED_RPM = 60;    // Default homing speed in rotations per minute
+    const uint8_t HOMING_BUMPS_NEEDED = 2;        // Number of consecutive bumps (100% load) needed to be sure that we have found the home
+                                                  // position and not just measured a glitched load value
 
     // Soft configuration
-    uint16_t _acceleration = DEFAULT_ACCELERATION; // Motor acceleration
-    stepperConfiguration_s _config; // Stepper configuration
-    uint32_t _microstepsPerRotation; // Count of step signals to be sent for one rotation
-    float _homingSpeedRpm = DEFAULT_HOMING_SPEED_RPM; // Speed for homing in rotations per minute, low values can lead to glitchy load-measurement and thus wrong homing
+    uint16_t _acceleration = DEFAULT_ACCELERATION;     // Motor acceleration
+    stepperConfiguration_s _config;                    // Stepper configuration
+    uint32_t _microstepsPerRotation;                   // Count of step signals to be sent for one rotation
+    float _homingSpeedRpm = DEFAULT_HOMING_SPEED_RPM;  // Speed for homing in rotations per minute, low values can lead to glitchy
+                                                       // load-measurement and thus wrong homing
 
     // Status
-    bool _initialised = false; // Flag whether controller has been initialised
-    uint8_t _homeConsecutiveBumpCounter = 0; // Number of consecutive bumps (100% load) while at homing-speed. Needed to detect proper home-position opposed to glitched load values.
-    bool _homed = false; // Flag whether the driver of the stepper has been homed yet
-    stepperStatus_s _stepperStatus; // Current status of stepper
-    
+    bool _initialised = false;                // Flag whether controller has been initialised
+    uint8_t _homeConsecutiveBumpCounter = 0;  // Number of consecutive bumps (100% load) while at homing-speed. Needed to detect proper
+                                              // home-position opposed to glitched load values.
+    bool _homed = false;                      // Flag whether the driver of the stepper has been homed yet
+    stepperStatus_s _stepperStatus;           // Current status of stepper
+
     // Recipes aka commands aka operation modes
-    const stepperRecipe_s _defaultRecipe = {
-        .mode = OFF, .rpm = 0, .load = 0, .position1 = 0, .position2 = 0};
+    const stepperRecipe_s _defaultRecipe = {.mode = OFF, .rpm = 0, .load = 0, .position1 = 0, .position2 = 0};
     stepperRecipe_s _currentRecipe = _defaultRecipe;  // current operation mode
     stepperRecipe_s _targetRecipe = _defaultRecipe;   // target operation mode
-    bool _newCommand = false; // Flag whether a new command is waiting in _targetRecipe
+    bool _newCommand = false;                         // Flag whether a new command is waiting in _targetRecipe
 
     /**
      * @brief Check if stepper is moving or rotating
@@ -89,7 +92,7 @@ class Stepper : public BaseController{
 
     /**
      * @brief Checks whether defined starting speed has been reached
-     * 
+     *
      * @return true speed reached
      * @return false speed not reached
      */
@@ -114,11 +117,12 @@ class Stepper : public BaseController{
 
     /**
      * @brief Make the motor run at a defined speed
-     * 
-     * @param speedRpm speed in rotations per minute. If 0 the motor will be powered but not moving. Positive / negative values determine the direction
+     *
+     * @param speedRpm speed in rotations per minute. If 0 the motor will be powered but not moving. Positive / negative values determine
+     * the direction
      * @param forceMoveStop true=forefully stop current movement before applying new speed, false=fluent transition into new speed
      */
-    void applySpeed(float speedRpm, boolean forceMoveStop=true);
+    void applySpeed(float speedRpm, boolean forceMoveStop = true);
 
     /**
      * @brief Start executing a recipe
@@ -140,15 +144,14 @@ class Stepper : public BaseController{
     void adjustSpeedByLoad();
 
    public:
-    Stepper(stepperConfiguration_s& config, FastAccelStepperEngine* engine);
-
+    Stepper(stepperConfiguration_s &config, FastAccelStepperEngine *engine);
 
     /**
      * @brief Get the current raw stall value from the driver
      *
      * @return uint16_t raw load 0...1023
      */
-    uint16_t getCurrentStall(); // TODO: Temporarily public for testing
+    uint16_t getCurrentStall();  // TODO: Temporarily public for testing
 
     /**
      * @brief Initialise controller according to set configuration
@@ -169,7 +172,7 @@ class Stepper : public BaseController{
 
     /**
      * @brief Start rotating stepper forever with constant speed
-     * 
+     *
      * @param rpm target stepper speed in rotationsPerMinute
      * negative values change direction
      */
@@ -208,7 +211,7 @@ class Stepper : public BaseController{
      * @param endPos end position
      * @param directionForward true=Start by moving from start to end, false=Start by moving from end to start
      */
-    void moveOscillate(float rpm, int32_t startPos, int32_t endPos, bool directionForward=true);
+    void moveOscillate(float rpm, int32_t startPos, int32_t endPos, bool directionForward = true);
 
     /**
      * @brief Manages states and transitions, repeatedly called
@@ -226,7 +229,7 @@ class Stepper : public BaseController{
 
     /**
      * @brief Check whether controller was initialised and is in a valid state
-     * 
+     *
      * @return true controller initialised and ready
      * @return false controller not ready
      */
@@ -240,17 +243,17 @@ class Stepper : public BaseController{
 
     // Getter-method
     float getHomingSpeed();
-    
+
     /**
      * @brief Sets the homing speed. Invalid (<= 0) values are corrected to the default(60 rpm)
-     * 
+     *
      * @param newSpeedRpm new speed in rotations per minute
      */
     void setHomingSpeed(float newSpeedRpm);
 
     /**
      * @brief Change start- and end-positions of current move-command without interrupting it
-     * 
+     *
      * @param startPos start position
      * @param endPos end position
      */
@@ -258,14 +261,14 @@ class Stepper : public BaseController{
 
     /**
      * @brief Change speed of current move-command without interrupting it
-     * 
+     *
      * @param rpm movement speed in rotations per minute
      */
-	void adjustMoveSpeed(float rpm);
+    void adjustMoveSpeed(float rpm);
 
     /**
      * @brief Set and apply new motor acceleration
-     * 
+     *
      * @param newAcceleration new value to be used
      */
     void adjustAcceleration(uint16_t newAcceleration);
