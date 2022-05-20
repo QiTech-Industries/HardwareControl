@@ -1,6 +1,6 @@
 {
     "name": "HardwareLibrary",
-    "version": "v1.0.0",
+    "version": "1.0.0",
     "description": "Diverse ESP hardware control library",
     "keywords": "esp, stepper, pid contoller, encoder, control, hardware",
     "repository":
