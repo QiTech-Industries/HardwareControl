@@ -1,0 +1,27 @@
+{
+    "name": "HardwareLibrary",
+    "version": "1.0.0",
+    "description": "Diverse ESP hardware control library",
+    "keywords": "esp, stepper, pid contoller, encoder, control, hardware",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/QiTech-Industries/HardwareControl"
+    },
+    "authors":
+    [
+      {
+        "name": "Simon Kolb",
+        "email": "dreidekoost@gmail.com",
+        "url": "https://github.com/DreiDe"
+      }
+    ],
+    "license": "GPL-3.0",
+    "homepage": "https://www.qitech.de/industries",
+    "dependencies": {
+      "teemuatlut/TMCStepper": "^0.7.3",
+      "gin66/FastAccelStepper": "^0.27.5"
+    },
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+  }
